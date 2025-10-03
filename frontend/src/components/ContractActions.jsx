@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Send, AlertTriangle, RefreshCw, DollarSign } from 'lucide-react';
+import { Send, AlertTriangle, RefreshCw, DollarSign, Brain, FileText } from 'lucide-react';
+import aiVerificationService from '../services/AIVerificationService';
+import VerificationResult from './VerificationResult';
+import toast from 'react-hot-toast';
 
 const ContractActions = ({ contractService }) => {
   const [projectDetails, setProjectDetails] = useState(null);
@@ -7,6 +10,13 @@ const ContractActions = ({ contractService }) => {
   const [transactionHistory, setTransactionHistory] = useState([]);
   const [depositAmount, setDepositAmount] = useState('');
   const [disputeReason, setDisputeReason] = useState('');
+  
+  // AI Verification states
+  const [verificationResult, setVerificationResult] = useState(null);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [verificationError, setVerificationError] = useState(null);
+  const [deliverySummary, setDeliverySummary] = useState('');
+  const [taskDescription, setTaskDescription] = useState('');
 
   useEffect(() => {
     if (contractService?.isContractConnected()) {
@@ -58,6 +68,51 @@ const ContractActions = ({ contractService }) => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // AI Verification functionality
+  const handleVerifyDelivery = async () => {
+    // Validate inputs
+    const validation = aiVerificationService.validateInput(taskDescription, deliverySummary);
+    if (!validation.isValid) {
+      validation.errors.forEach(error => toast.error(error));
+      return;
+    }
+
+    setIsVerifying(true);
+    setVerificationError(null);
+    setVerificationResult(null);
+
+    try {
+      const result = await aiVerificationService.verifyTaskCompletion(
+        taskDescription, 
+        deliverySummary
+      );
+
+      const formattedResult = aiVerificationService.formatVerificationResult(result);
+      setVerificationResult(formattedResult);
+
+      // Show success message with recommendation
+      if (formattedResult.recommendation === 'release') {
+        toast.success(`Verification complete! Score: ${formattedResult.completionScore}/100 - Release recommended`);
+      } else {
+        toast.error(`Verification complete! Score: ${formattedResult.completionScore}/100 - Dispute recommended`);
+      }
+
+    } catch (error) {
+      console.error('AI verification failed:', error);
+      setVerificationError(error.message || 'Verification failed. Please try again.');
+    } finally {
+      setIsVerifying(false);
+    }
+  };
+
+  // Auto-enable release button based on AI recommendation
+  const shouldEnableRelease = () => {
+    if (!verificationResult) return false;
+    return verificationResult.recommendation === 'release' && 
+           verificationResult.completionScore >= 70 &&
+           !projectDetails?.disputed;
   };
 
   if (!projectDetails) {
@@ -127,6 +182,78 @@ const ContractActions = ({ contractService }) => {
         </div>
       </div>
 
+      {/* AI Verification */}
+      <div className="bg-white rounded-lg shadow-md border border-gray-200">
+        <div className="p-6 border-b border-gray-200">
+          <div className="flex items-center space-x-3">
+            <Brain className="h-6 w-6 text-primary-600" />
+            <h3 className="text-lg font-semibold text-gray-900">AI Task Verification</h3>
+          </div>
+          <p className="text-sm text-gray-600 mt-2">
+            Use AI to analyze task completion and get intelligent recommendations
+          </p>
+        </div>
+        <div className="p-6">
+          <div className="space-y-4">
+            {/* Task Description */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Task Description
+              </label>
+              <textarea
+                value={taskDescription}
+                onChange={(e) => setTaskDescription(e.target.value)}
+                placeholder="Describe the original task requirements and deliverables..."
+                rows={3}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                disabled={isVerifying}
+              />
+            </div>
+
+            {/* Delivery Summary */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Delivery Summary
+              </label>
+              <textarea
+                value={deliverySummary}
+                onChange={(e) => setDeliverySummary(e.target.value)}
+                placeholder="Describe what was actually delivered or completed..."
+                rows={3}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                disabled={isVerifying}
+              />
+            </div>
+
+            {/* Verify Button */}
+            <button
+              onClick={handleVerifyDelivery}
+              disabled={isVerifying || !taskDescription.trim() || !deliverySummary.trim()}
+              className="w-full px-4 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center space-x-2"
+            >
+              {isVerifying ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  <span>Verifying...</span>
+                </>
+              ) : (
+                <>
+                  <Brain className="h-4 w-4" />
+                  <span>Verify Delivery with AI</span>
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Verification Result */}
+      <VerificationResult 
+        result={verificationResult}
+        isLoading={isVerifying}
+        error={verificationError}
+      />
+
       {/* Contract Actions */}
       <div className="bg-white rounded-lg shadow-md border border-gray-200">
         <div className="p-6 border-b border-gray-200">
@@ -170,9 +297,13 @@ const ContractActions = ({ contractService }) => {
               <button
                 onClick={() => handleAction('release')}
                 disabled={isLoading || projectDetails.disputed}
-                className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className={`w-full px-4 py-2 text-white rounded-lg focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors ${
+                  shouldEnableRelease() 
+                    ? 'bg-green-600 hover:bg-green-700 focus:ring-green-500' 
+                    : 'bg-blue-600 hover:bg-blue-700 focus:ring-blue-500'
+                }`}
               >
-                Release to Freelancer
+                {shouldEnableRelease() ? '✅ Release to Freelancer (AI Recommended)' : 'Release to Freelancer'}
               </button>
             </div>
 
