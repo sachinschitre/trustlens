@@ -1,0 +1,57 @@
+contract Escrow =
+  record state = 
+    { client : address
+    , freelancer : address
+    , mediator : address
+    , amount : int
+    , deadline : int
+    , disputed : bool }
+
+  entrypoint init(client : address, freelancer : address, mediator : address, 
+                  amount : int, deadline : int) : state =
+    { client = client
+    , freelancer = freelancer
+    , mediator = mediator
+    , amount = amount
+    , deadline = deadline
+    , disputed = false }
+
+  payable stateful entrypoint deposit() : bool =
+    require(Call.value >= state.amount, "Insufficient deposit amount")
+    require(Call.caller == state.client, "Only client can deposit")
+    Chain.event("FundDeposited", { amount = Call.value, client = Call.caller })
+    true
+
+  payable stateful entrypoint release() : bool =
+    require(Call.caller == state.client || Call.caller == state.mediator, 
+           "Only client or mediator can release funds")
+    require(Chain.beneficiary == state.freelancer, "Wrong beneficiary")
+    require(state.disputed == false, "Cannot release disputed funds")
+    Chain.event("FundReleased", { amount = state.amount, freelancer = state.freelancer })
+    true
+
+  stateful entrypoint dispute(reason : string) : bool =
+    require(Call.caller == state.client || Call.caller == state.freelancer, 
+           "Only client or freelancer can dispute")
+    require(state.disputed == false, "Already disputed")
+    
+    let new_state = { state | disputed = true }
+    put(new_state)
+    
+    Chain.event("DisputeRaised", { 
+      reason = reason
+    , disputant = Call.caller 
+    , mediator = state.mediator 
+    })
+    true
+
+  payable stateful entrypoint refund() : bool =
+    require(Call.caller == state.client || Call.caller == state.mediator, 
+           "Only client or mediator can refund")
+    require(Chain.beneficiary == state.client, "Wrong beneficiary")
+    require(state.disputed == true, "Can only refund disputed funds")
+    Chain.event("FundRefunded", { amount = state.amount, client = state.client })
+    true
+
+  entrypoint get_project_details() : (address, address, address, int, int, bool) =
+    (state.client, state.freelancer, state.mediator, state.amount, state.deadline, state.disputed)

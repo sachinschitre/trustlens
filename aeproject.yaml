@@ -1,0 +1,5 @@
+name: trustlens-escrow
+version: 1.0.0
+compiler_version: 7.0.0
+sophia_version: 6
+network_location: ~/.aeternity/aeternity.yaml
