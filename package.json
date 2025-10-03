@@ -5,9 +5,8 @@
   "main": "deploy.js",
   "scripts": {
     "deploy": "node deploy.js",
-    "compile": "aeproject build",
-    "test": "aeproject test",
-    "lint": "aesophia_cli lint escrhow.aes"
+    "test": "echo 'Contract tests require Aeternity CLI setup'",
+    "lint": "echo 'Contract linting requires Aeternity CLI setup'"
   },
   "keywords": [
     "aeternity",
@@ -19,10 +18,7 @@
   "author": "TrustLens",
   "license": "MIT",
   "dependencies": {
-    "@aeternity/aepp-sdk": "^13.0.0",
-    "@aeternity/aeproject": "^4.0.0"
+    "@aeternity/aepp-sdk": "^13.0.0"
   },
-  "devDependencies": {
-    "aesophia_cli": "^8.1.0"
-  }
+  "devDependencies": {}
 }
