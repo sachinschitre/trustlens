@@ -23,7 +23,21 @@ export const WalletProvider = ({ children }) => {
   // Check wallet availability on mount
   useEffect(() => {
     const checkWallet = () => {
+      // Force re-check availability
+      superheroWalletService.checkAvailability();
       const status = superheroWalletService.getStatus();
+      
+      console.log('Wallet status check:', status);
+      console.log('Window objects:', {
+        superhero: !!window.superhero,
+        aepp: !!window.aepp,
+        windowKeys: Object.keys(window).filter(key => 
+          key.toLowerCase().includes('superhero') || 
+          key.toLowerCase().includes('aepp') ||
+          key.toLowerCase().includes('wallet')
+        )
+      });
+      
       setIsAvailable(status.isAvailable);
       
       if (status.isConnected && status.account) {
@@ -34,10 +48,11 @@ export const WalletProvider = ({ children }) => {
       }
     };
 
-    checkWallet();
+    // Initial check with delay to allow extension to load
+    setTimeout(checkWallet, 1000);
     
     // Check periodically for wallet availability
-    const interval = setInterval(checkWallet, 2000);
+    const interval = setInterval(checkWallet, 3000);
     return () => clearInterval(interval);
   }, []);
 
