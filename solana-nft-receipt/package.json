@@ -1,0 +1,48 @@
+{
+  "name": "trustlens-nft-receipt",
+  "version": "1.0.0",
+  "description": "Solana NFT Receipt for TrustLens Escrow Deals",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "anchor build",
+    "test": "anchor test",
+    "deploy": "anchor deploy",
+    "deploy-devnet": "anchor deploy --provider.cluster devnet",
+    "deploy-mainnet": "anchor deploy --provider.cluster mainnet-beta",
+    "client:build": "tsc -p ts/client/tsconfig.json",
+    "client:test": "ts-node ts/client/test.ts",
+    "lint": "eslint . --ext .ts,.js",
+    "format": "prettier --write ."
+  },
+  "keywords": [
+    "solana",
+    "anchor",
+    "nft",
+    "escrow",
+    "trustlens",
+    "soulbound"
+  ],
+  "author": "TrustLens",
+  "license": "MIT",
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.29.0",
+    "@solana/web3.js": "^1.87.6",
+    "@solana/spl-token": "^0.3.9",
+    "@metaplex-foundation/mpl-token-metadata": "^3.2.0",
+    "bs58": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/bn.js": "^5.1.0",
+    "@types/chai": "^4.3.0",
+    "@types/mocha": "^10.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "chai": "^4.3.0",
+    "eslint": "^8.0.0",
+    "mocha": "^10.0.0",
+    "prettier": "^3.0.0",
+    "ts-mocha": "^10.0.0",
+    "ts-node": "^10.0.0",
+    "typescript": "^5.0.0"
+  }
+}
