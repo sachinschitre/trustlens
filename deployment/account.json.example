@@ -1,0 +1,6 @@
+{
+  "publicKey": "ak_YourPublicKeyHere",
+  "secretKey": "YourSecretKeyHere",
+  "address": "ak_YourAddressHere",
+  "note": "This is an example account file. Copy this to account.json and replace with your actual testnet account details."
+}

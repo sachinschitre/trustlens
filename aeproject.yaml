@@ -1,5 +1,17 @@
 name: trustlens-escrow
 version: 1.0.0
-compiler_version: 7.0.0
+compiler_version: 7.6.1
 sophia_version: 6
 network_location: ~/.aeternity/aeternity.yaml
+
+# Testnet configuration
+networks:
+  testnet:
+    url: https://testnet.aeternity.io
+    compilerUrl: https://compiler.aepps.com
+    internalUrl: https://sdk-testnet.aepps.com
+    gas: 200000
+    gasPrice: 1000000000
+    accounts:
+      default:
+        path: ./deployment/account.json
