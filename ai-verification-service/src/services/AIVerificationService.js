@@ -3,10 +3,20 @@ const logger = require('../utils/logger');
 
 class AIVerificationService {
   constructor() {
-    this.openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
-    });
+    this.apiKey = process.env.OPENAI_API_KEY;
     this.model = process.env.OPENAI_MODEL || 'gpt-3.5-turbo';
+    this.mockMode = !this.apiKey || this.apiKey === 'test-key';
+    
+    if (!this.mockMode) {
+      this.openai = new OpenAI({
+        apiKey: this.apiKey,
+      });
+    }
+    
+    logger.info('AI Verification Service initialized', {
+      mode: this.mockMode ? 'mock' : 'production',
+      model: this.model
+    });
   }
 
   /**
@@ -19,8 +29,13 @@ class AIVerificationService {
     try {
       logger.info('Starting AI verification process', {
         taskLength: taskDescription.length,
-        deliveryLength: deliverySummary.length
+        deliveryLength: deliverySummary.length,
+        mode: this.mockMode ? 'mock' : 'production'
       });
+
+      if (this.mockMode) {
+        return this.mockVerification(taskDescription, deliverySummary);
+      }
 
       const prompt = this.buildVerificationPrompt(taskDescription, deliverySummary);
       
@@ -57,6 +72,54 @@ class AIVerificationService {
       });
       throw new Error(`Verification failed: ${error.message}`);
     }
+  }
+
+  /**
+   * Mock verification for demo purposes when no API key is available
+   */
+  mockVerification(taskDescription, deliverySummary) {
+    logger.info('Using mock AI verification');
+    
+    // Simple mock logic based on keyword matching
+    const taskWords = taskDescription.toLowerCase().split(/\s+/);
+    const deliveryWords = deliverySummary.toLowerCase().split(/\s+/);
+    
+    // Calculate similarity based on common words
+    const commonWords = taskWords.filter(word => 
+      deliveryWords.includes(word) && word.length > 3
+    );
+    
+    const similarity = commonWords.length / Math.max(taskWords.length, deliveryWords.length);
+    
+    // Generate mock score and recommendation
+    let completionScore;
+    let recommendation;
+    
+    if (similarity > 0.7) {
+      completionScore = Math.floor(75 + Math.random() * 25); // 75-100
+      recommendation = 'release';
+    } else if (similarity > 0.4) {
+      completionScore = Math.floor(50 + Math.random() * 25); // 50-75
+      recommendation = Math.random() > 0.5 ? 'release' : 'dispute';
+    } else {
+      completionScore = Math.floor(20 + Math.random() * 30); // 20-50
+      recommendation = 'dispute';
+    }
+    
+    const mockResult = {
+      completionScore,
+      recommendation,
+      reasoning: `Mock analysis: Found ${commonWords.length} matching keywords out of ${Math.max(taskWords.length, deliveryWords.length)} total words. Similarity score: ${(similarity * 100).toFixed(1)}%. Based on this analysis, the task appears to be ${completionScore >= 70 ? 'well completed' : 'incompletely delivered'}.`,
+      timestamp: new Date().toISOString(),
+      model: 'mock-ai-verifier-v1.0'
+    };
+    
+    logger.info('Mock verification completed', {
+      completionScore: mockResult.completionScore,
+      recommendation: mockResult.recommendation
+    });
+    
+    return this.validateAndFormatResult(mockResult);
   }
 
   /**
