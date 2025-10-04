@@ -29,20 +29,19 @@ const SolanaNftViewer = () => {
     disconnectWallet 
   } = useSolanaWallet();
 
-  const [nftService, setNftService] = useState(null);
   const [nfts, setNfts] = useState([]);
   const [filteredNfts, setFilteredNfts] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [stats, setStats] = useState(null);
   const [selectedFilter, setSelectedFilter] = useState('all');
   const [sortBy, setSortBy] = useState('newest');
   const [showDetails, setShowDetails] = useState({});
 
+  // Calculate filter counts dynamically
   const filterOptions = [
-    { value: 'all', label: 'All NFTs', count: 0 },
-    { value: 'active', label: 'Active', count: 0 },
-    { value: 'released', label: 'Released', count: 0 },
-    { value: 'disputed', label: 'Disputed', count: 0 },
+    { value: 'all', label: 'All NFTs', count: nfts.length },
+    { value: 'active', label: 'Active', count: nfts.filter(nft => nft.status?.toLowerCase() === 'active').length },
+    { value: 'released', label: 'Released', count: nfts.filter(nft => nft.status?.toLowerCase() === 'released').length },
+    { value: 'disputed', label: 'Disputed', count: nfts.filter(nft => nft.status?.toLowerCase() === 'disputed').length },
   ];
 
   const sortOptions = [
@@ -54,40 +53,39 @@ const SolanaNftViewer = () => {
     { value: 'score_low', label: 'Score (Low to High)' },
   ];
 
+  // Initialize NFT service and fetch NFTs when wallet is connected
   useEffect(() => {
-    if (isConnected && metaplex && publicKey) {
-      const service = new SolanaNftService(metaplex, connection, publicKey);
-      setNftService(service);
-      fetchNfts(service);
+    if (isConnected && publicKey) {
+      fetchNfts();
+    } else {
+      setNfts([]);
+      setFilteredNfts([]);
     }
-  }, [isConnected, metaplex, publicKey, connection]);
+  }, [isConnected, publicKey]);
 
   useEffect(() => {
     if (nfts.length > 0) {
-      // Update filter counts
-      const updatedFilters = filterOptions.map(filter => ({
-        ...filter,
-        count: filter.value === 'all' ? nfts.length : 
-               nfts.filter(nft => nft.status === filter.value).length
-      }));
+      // Filter NFTs by status
+      let filtered = nfts;
+      if (selectedFilter !== 'all') {
+        filtered = nfts.filter(nft => nft.status?.toLowerCase() === selectedFilter);
+      }
 
-      // Filter and sort NFTs
-      const filtered = nftService?.filterNftsByStatus(nfts, selectedFilter) || [];
-      const sorted = nftService?.sortNfts(filtered, sortBy) || [];
+      // Sort NFTs
+      const sorted = sortNfts(filtered, sortBy);
       setFilteredNfts(sorted);
-
-      // Update stats
-      const nftStats = nftService?.getNftStats(nfts);
-      setStats(nftStats);
+    } else {
+      setFilteredNfts([]);
     }
-  }, [nfts, selectedFilter, sortBy, nftService]);
+  }, [nfts, selectedFilter, sortBy]);
 
-  const fetchNfts = async (service) => {
-    if (!service) return;
+  const fetchNfts = async () => {
+    if (!publicKey) return;
 
     setLoading(true);
     try {
-      const fetchedNfts = await service.getAllNfts();
+      const nftService = new SolanaNftService();
+      const fetchedNfts = await nftService.fetchTrustLensNfts(publicKey.toString());
       setNfts(fetchedNfts);
       
       if (fetchedNfts.length > 0) {
@@ -104,8 +102,28 @@ const SolanaNftViewer = () => {
   };
 
   const handleRefresh = () => {
-    if (nftService) {
-      fetchNfts(nftService);
+    fetchNfts();
+  };
+
+  // Sort NFTs function
+  const sortNfts = (nftList, sortOption) => {
+    const sorted = [...nftList];
+    
+    switch (sortOption) {
+      case 'newest':
+        return sorted.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+      case 'oldest':
+        return sorted.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+      case 'amount_high':
+        return sorted.sort((a, b) => (b.amount || 0) - (a.amount || 0));
+      case 'amount_low':
+        return sorted.sort((a, b) => (a.amount || 0) - (b.amount || 0));
+      case 'score_high':
+        return sorted.sort((a, b) => (b.completion_score || 0) - (a.completion_score || 0));
+      case 'score_low':
+        return sorted.sort((a, b) => (a.completion_score || 0) - (b.completion_score || 0));
+      default:
+        return sorted;
     }
   };
 
@@ -204,45 +222,33 @@ const SolanaNftViewer = () => {
         </div>
       </div>
 
-      {/* Stats */}
-      {stats && (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-white rounded-lg shadow-md border border-gray-200 p-4">
-            <div className="flex items-center">
-              <BarChart3 className="h-8 w-8 text-primary-600" />
-              <div className="ml-3">
-                <p className="text-sm font-medium text-gray-500">Total NFTs</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
+      {/* Simple Stats */}
+      {nfts.length > 0 && (
+        <div className="bg-white rounded-lg shadow-md border border-gray-200 p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-6">
+              <div className="flex items-center">
+                <BarChart3 className="h-6 w-6 text-primary-600" />
+                <div className="ml-2">
+                  <p className="text-sm font-medium text-gray-500">Total NFTs</p>
+                  <p className="text-xl font-bold text-gray-900">{nfts.length}</p>
+                </div>
               </div>
-            </div>
-          </div>
-          
-          <div className="bg-white rounded-lg shadow-md border border-gray-200 p-4">
-            <div className="flex items-center">
-              <TrendingUp className="h-8 w-8 text-green-600" />
-              <div className="ml-3">
-                <p className="text-sm font-medium text-gray-500">Total Value</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.totalValue.toFixed(2)} SOL</p>
+              
+              <div className="flex items-center">
+                <CheckCircle className="h-6 w-6 text-green-600" />
+                <div className="ml-2">
+                  <p className="text-sm font-medium text-gray-500">Released</p>
+                  <p className="text-xl font-bold text-gray-900">{nfts.filter(nft => nft.status?.toLowerCase() === 'released').length}</p>
+                </div>
               </div>
-            </div>
-          </div>
-          
-          <div className="bg-white rounded-lg shadow-md border border-gray-200 p-4">
-            <div className="flex items-center">
-              <CheckCircle className="h-8 w-8 text-green-600" />
-              <div className="ml-3">
-                <p className="text-sm font-medium text-gray-500">Released</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.released}</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white rounded-lg shadow-md border border-gray-200 p-4">
-            <div className="flex items-center">
-              <XCircle className="h-8 w-8 text-red-600" />
-              <div className="ml-3">
-                <p className="text-sm font-medium text-gray-500">Disputed</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.disputed}</p>
+              
+              <div className="flex items-center">
+                <XCircle className="h-6 w-6 text-red-600" />
+                <div className="ml-2">
+                  <p className="text-sm font-medium text-gray-500">Disputed</p>
+                  <p className="text-xl font-bold text-gray-900">{nfts.filter(nft => nft.status?.toLowerCase() === 'disputed').length}</p>
+                </div>
               </div>
             </div>
           </div>
