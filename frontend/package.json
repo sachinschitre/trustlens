@@ -20,7 +20,11 @@
     "react-hot-toast": "^2.4.1",
     "lucide-react": "^0.400.0",
     "clsx": "^2.0.0",
-    "axios": "^1.6.0"
+    "axios": "^1.6.0",
+    "@solana/web3.js": "^1.87.6",
+    "@solana/spl-token": "^0.3.9",
+    "@metaplex-foundation/js": "^0.18.1",
+    "bs58": "^5.0.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.43",
