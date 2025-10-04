@@ -5,10 +5,12 @@ import { SolanaWalletProvider } from './contexts/SolanaWalletContext';
 import WalletConnection from './components/WalletConnection';
 import ContractForm from './components/ContractForm';
 import ContractActions from './components/ContractActions';
+import EnhancedContractActions from './components/EnhancedContractActions';
 import TransactionStatus from './components/TransactionStatus';
 import SolanaNftViewer from './components/SolanaNftViewer';
 import WalletStatusIndicator from './components/WalletStatusIndicator';
 import { FileText, BarChart3 } from 'lucide-react';
+import CONFIG from './config/contract';
 import './App.css';
 
 function App() {
@@ -16,6 +18,7 @@ function App() {
   const [recentTransaction, setRecentTransaction] = useState(null);
   const [step, setStep] = useState(1); // 1: Connect Wallet, 2: Choose Contract, 3: Interact
   const [activeTab, setActiveTab] = useState('escrow'); // 'escrow' or 'nfts'
+  const [useEnhancedActions, setUseEnhancedActions] = useState(true); // Toggle between enhanced and basic actions
 
   const handleContractConnected = (service, deployResult = null) => {
     setContractService(service);
@@ -181,10 +184,45 @@ function App() {
                 <div className="lg:col-span-2 space-y-6">
                   {/* Contract Actions */}
                   {contractService && (
-                    <ContractActions 
-                      contractService={contractService} 
-                      onTransactionComplete={handleTransactionComplete}
-                    />
+                    <>
+                      {useEnhancedActions ? (
+                        <EnhancedContractActions 
+                          wallet={contractService.wallet}
+                        />
+                      ) : (
+                        <ContractActions 
+                          contractService={contractService} 
+                          onTransactionComplete={handleTransactionComplete}
+                        />
+                      )}
+                      
+                      {/* Toggle Button */}
+                      <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <h4 className="text-sm font-medium text-gray-900">
+                              Contract Integration Mode
+                            </h4>
+                            <p className="text-xs text-gray-500 mt-1">
+                              {useEnhancedActions 
+                                ? 'Enhanced mode with transaction manager and config integration' 
+                                : 'Basic mode with original contract service'
+                              }
+                            </p>
+                          </div>
+                          <button
+                            onClick={() => setUseEnhancedActions(!useEnhancedActions)}
+                            className={`px-3 py-1 text-xs rounded-md transition-colors ${
+                              useEnhancedActions 
+                                ? 'bg-primary-100 text-primary-800 hover:bg-primary-200' 
+                                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                            }`}
+                          >
+                            {useEnhancedActions ? 'Enhanced Mode' : 'Basic Mode'}
+                          </button>
+                        </div>
+                      </div>
+                    </>
                   )}
 
                   {/* Recent Transaction Status */}
@@ -205,6 +243,26 @@ function App() {
                         A secure cross-chain escrow platform powered by Aeternity and Solana blockchains.
                         Connect your wallet to get started.
                       </p>
+                      
+                      {/* Deployed Contract Info */}
+                      <div className="bg-gray-50 rounded-lg p-4 mb-6 text-left">
+                        <h3 className="text-sm font-medium text-gray-900 mb-2">Deployed Contract</h3>
+                        <div className="space-y-2 text-xs">
+                          <div className="flex justify-between">
+                            <span className="text-gray-500">Address:</span>
+                            <span className="font-mono text-gray-900">{CONFIG.contract.address}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-500">Network:</span>
+                            <span className="text-gray-900">{CONFIG.contract.network}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-500">Status:</span>
+                            <span className="text-green-600">✅ Deployed</span>
+                          </div>
+                        </div>
+                      </div>
+                      
                       <ul className="text-sm text-gray-500 space-y-2">
                         <li className="flex items-center justify-center space-x-2">
                           <span className="text-green-500">✓</span>
