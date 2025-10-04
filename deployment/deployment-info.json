@@ -1,0 +1,17 @@
+{
+  "contractAddress": "ct_mgcu3hf44v523o840mx",
+  "transactionHash": "th_mgcu3hf46bhx96u8b0h",
+  "deployerAddress": "ak_mockAddress123456789",
+  "deployParams": {
+    "client": "ak_mockAddress123456789",
+    "freelancer": "ak_freelancer123456789",
+    "mediator": "ak_mediator123456789",
+    "amount": 1000000000000000000,
+    "deadline": 1762208272,
+    "disputed": false,
+    "project_description": "TrustLens escrow contract deployment test"
+  },
+  "deployedAt": "2025-10-04T22:17:52.624Z",
+  "network": "testnet",
+  "note": "This is a mock deployment for demonstration purposes"
+}

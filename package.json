@@ -6,14 +6,16 @@
   "scripts": {
     "deploy": "node deployment/deploy.js",
     "deploy:testnet": "node deployment/deploy.js --network testnet",
+    "deploy:mock": "node deployment/deploy-mock.js",
     "test": "node deployment/test-contract.js",
     "test:contract": "node deployment/test-contract.js",
+    "test:mock": "node deployment/test-contract-mock.js",
     "setup": "npm install && echo 'Setup complete. Run npm run deploy to deploy to testnet.'",
     "setup:deployment": "chmod +x scripts/setup-deployment.sh && ./scripts/setup-deployment.sh",
     "lint": "echo 'Contract linting requires Aeternity CLI setup'",
     "clean": "rm -f deployment/account.json deployment/deployment-info.json",
     "status": "node -e \"console.log('TrustLens Escrow Contract Ready for Deployment')\"",
-    "help": "echo 'Available commands: deploy, test, setup, clean, status'"
+    "help": "echo 'Available commands: deploy, deploy:mock, test, test:mock, setup, clean, status'"
   },
   "keywords": [
     "aeternity",
