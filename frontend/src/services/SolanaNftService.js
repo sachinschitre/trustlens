@@ -1,5 +1,4 @@
 import { PublicKey } from '@solana/web3.js';
-import { findProgramAddressSync } from '@coral-xyz/anchor/dist/cjs/utils/pubkey';
 
 class SolanaNftService {
   constructor(metaplex, connection, publicKey) {
@@ -248,16 +247,13 @@ class SolanaNftService {
   async getEscrowContractData(escrowId) {
     try {
       // In a real implementation, this would query the TrustLens program
-      // For now, we'll return mock data
-      const [escrowNftPda] = findProgramAddressSync(
-        [Buffer.from("escrow_nft"), Buffer.from(escrowId)],
-        this.trustlensProgramId
-      );
+      // For now, we'll return mock data with a generated PDA address
+      const escrowNftPda = this.generatePdaAddress(escrowId);
 
       // Mock contract data
       return {
         escrowId,
-        contractAddress: escrowNftPda.toString(),
+        contractAddress: escrowNftPda,
         status: 'active',
         amount: 1000000000,
         client: 'ak_clientAddress123456789',
@@ -269,6 +265,26 @@ class SolanaNftService {
     } catch (error) {
       console.error('Failed to get escrow contract data:', error);
       throw error;
+    }
+  }
+
+  /**
+   * Generate a PDA address for demo purposes
+   * In production, this would use the actual Solana program's PDA generation
+   */
+  generatePdaAddress(escrowId) {
+    try {
+      // Create a deterministic address using crypto hash
+      const seed = `escrow_nft_${escrowId}`;
+      const seedBuffer = Buffer.from(seed, 'utf8');
+      const seedHash = require('crypto').createHash('sha256').update(seedBuffer).digest();
+      
+      // Generate a mock PublicKey from the hash
+      const mockKeypair = require('@solana/web3.js').Keypair.fromSeed(seedHash.slice(0, 32));
+      return mockKeypair.publicKey.toString();
+    } catch (error) {
+      // Fallback to a simple generated address
+      return `escrow_${escrowId}_${Math.random().toString(36).substring(7)}`;
     }
   }
 
