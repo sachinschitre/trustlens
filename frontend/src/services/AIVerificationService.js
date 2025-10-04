@@ -4,7 +4,7 @@ import toast from 'react-hot-toast';
 class AIVerificationService {
   constructor() {
     // Configure API base URL - defaults to localhost for development
-    this.baseURL = import.meta.env.VITE_AI_SERVICE_URL || 'http://localhost:3001/api';
+    this.baseURL = import.meta.env.VITE_AI_SERVICE_URL || 'http://localhost:3001';
     this.client = axios.create({
       baseURL: this.baseURL,
       timeout: 30000, // 30 second timeout for AI processing
@@ -58,7 +58,7 @@ class AIVerificationService {
    */
   async verifyTaskCompletion(taskDescription, deliverySummary) {
     try {
-      const response = await this.client.post('/verification/verify', {
+      const response = await this.client.post('/api/verification/verify', {
         taskDescription: taskDescription.trim(),
         deliverySummary: deliverySummary.trim(),
       });
@@ -81,7 +81,7 @@ class AIVerificationService {
    */
   async verifyBatchTasks(tasks) {
     try {
-      const response = await this.client.post('/verification/batch', {
+      const response = await this.client.post('/api/verification/batch', {
         tasks: tasks.map(task => ({
           taskId: task.taskId || `task_${Date.now()}`,
           taskDescription: task.taskDescription.trim(),
@@ -106,7 +106,7 @@ class AIVerificationService {
    */
   async checkHealth() {
     try {
-      const response = await this.client.get('/health');
+      const response = await this.client.get('/api/health');
       return {
         status: 'healthy',
         data: response.data,
@@ -126,7 +126,7 @@ class AIVerificationService {
    */
   async getDetailedHealth() {
     try {
-      const response = await this.client.get('/health/detailed');
+      const response = await this.client.get('/api/health/detailed');
       return {
         status: 'healthy',
         data: response.data,
@@ -146,7 +146,7 @@ class AIVerificationService {
    */
   async getAvailableModels() {
     try {
-      const response = await this.client.get('/verification/models');
+      const response = await this.client.get('/api/verification/models');
       return response.data.data.availableModels;
     } catch (error) {
       console.error('Get models error:', error);
