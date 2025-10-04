@@ -48,8 +48,17 @@ const TransactionStatus = ({ txHash, status, gasUsed }) => {
   };
 
   const getTransactionUrl = (hash) => {
-    // Aeternity explorer URL (adjust for testnet/mainnet)
-    return `https://testnet.explorable.com/transactions/${hash}`;
+    // Check if this is a mock transaction
+    if (hash && (hash.startsWith('th_mock_') || hash.startsWith('tx_mock_') || hash.includes('mock'))) {
+      return null; // Return null for mock transactions
+    }
+    
+    // Aeternity testnet explorer URL
+    return `https://testnet.explorer.aepps.com/#/tx/${hash}`;
+  };
+
+  const isMockTransaction = (hash) => {
+    return hash && (hash.startsWith('th_mock_') || hash.startsWith('tx_mock_') || hash.includes('mock'));
   };
 
   if (!txHash) {
@@ -98,15 +107,24 @@ const TransactionStatus = ({ txHash, status, gasUsed }) => {
                   <Copy className="h-4 w-4" />
                 )}
               </button>
-              <a
-                href={getTransactionUrl(txHash)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
-                title="View on explorer"
-              >
-                <ExternalLink className="h-4 w-4" />
-              </a>
+              {!isMockTransaction(txHash) ? (
+                <a
+                  href={getTransactionUrl(txHash)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+                  title="View on Aeternity Explorer"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                </a>
+              ) : (
+                <span 
+                  className="p-2 text-gray-300 cursor-not-allowed"
+                  title="Mock transaction - not on blockchain"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                </span>
+              )}
             </div>
             {copied && (
               <p className="text-xs text-green-600 mt-1">Copied to clipboard!</p>
@@ -159,14 +177,29 @@ const TransactionStatus = ({ txHash, status, gasUsed }) => {
           >
             Refresh Status
           </button>
-          <a
-            href={getTransactionUrl(txHash)}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors text-sm"
-          >
-            View on Explorer
-          </a>
+          {!isMockTransaction(txHash) ? (
+            <a
+              href={getTransactionUrl(txHash)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors text-sm"
+            >
+              View on Aeternity Explorer
+            </a>
+          ) : (
+            <div className="text-center">
+              <button
+                disabled
+                className="px-4 py-2 bg-gray-300 text-gray-500 rounded-lg cursor-not-allowed text-sm mb-2"
+                title="Mock transaction - not on blockchain"
+              >
+                Demo Transaction
+              </button>
+              <p className="text-xs text-gray-500">
+                This is a demo transaction for testing purposes
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </div>
