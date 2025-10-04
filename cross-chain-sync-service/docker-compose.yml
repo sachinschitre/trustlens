@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  cross-chain-sync:
+    build: .
+    ports:
+      - "3003:3003"
+    environment:
+      - NODE_ENV=production
+      - PORT=3003
+      - AETERNITY_NETWORK=${AETERNITY_NETWORK:-testnet}
+      - AETERNITY_RPC_URL=${AETERNITY_RPC_URL:-https://testnet.aeternity.io}
+      - AETERNITY_WS_URL=${AETERNITY_WS_URL:-wss://testnet.aeternity.io/websocket}
+      - AETERNITY_CONTRACT_ADDRESS=${AETERNITY_CONTRACT_ADDRESS}
+      - SOLANA_CLUSTER=${SOLANA_CLUSTER:-devnet}
+      - SOLANA_RPC_URL=${SOLANA_RPC_URL:-https://api.devnet.solana.com}
+      - SOLANA_PROGRAM_ID=${SOLANA_PROGRAM_ID}
+      - SOLANA_ORACLE_SEED=${SOLANA_ORACLE_SEED:-trustlens-oracle-sync}
+      - SYNC_ENABLED=true
+      - LOG_LEVEL=info
+      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:3000,http://localhost:3002}
+    volumes:
+      - ./logs:/app/logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3003/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - trustlens-network
+
+  # Optional: Add database services for persistent storage
+  # postgres:
+  #   image: postgres:15-alpine
+  #   environment:
+  #     POSTGRES_DB: trustlens_sync
+  #     POSTGRES_USER: trustlens
+  #     POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   networks:
+  #     - trustlens-network
+
+  # redis:
+  #   image: redis:7-alpine
+  #   volumes:
+  #     - redis_data:/data
+  #   networks:
+  #     - trustlens-network
+
+networks:
+  trustlens-network:
+    driver: bridge
+
+# volumes:
+#   postgres_data:
+#   redis_data:
