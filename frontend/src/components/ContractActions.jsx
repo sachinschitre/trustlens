@@ -363,17 +363,17 @@ const ContractActions = ({ contractService }) => {
                 <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                   <div>
                     <p className="text-sm font-mono text-gray-600">
-                      {tx.txHash.slice(0, 10)}...
+                      {tx.txHash ? `${tx.txHash.slice(0, 10)}...` : 'No hash available'}
                     </p>
                   </div>
                   <span className={`
                     inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                    ${tx.status === 'success' 
+                    ${(tx.status || 'unknown') === 'success' 
                       ? 'bg-green-100 text-green-800' 
                       : 'bg-red-100 text-red-800'
                     }
                   `}>
-                    {tx.status}
+                    {tx.status || 'unknown'}
                   </span>
                   {tx.gasUsed && (
                     <span className="text-xs text-gray-500">

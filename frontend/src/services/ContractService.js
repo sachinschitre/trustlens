@@ -97,7 +97,7 @@ class ContractService {
       
       toast.success(`Deposit of ${amount} AE successful! Tx: ${txHash}`);
       return { 
-        hash: txHash, 
+        txHash: txHash, 
         status: 'success', 
         gasUsed: 5000, 
         gasPrice: 1000000000,
