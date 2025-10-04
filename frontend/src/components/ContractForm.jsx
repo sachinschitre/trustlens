@@ -7,7 +7,7 @@ const ContractForm = ({ onContractConnected }) => {
   const { wallet, isConnected } = useWallet();
   const [contractService] = useState(() => new ContractService(wallet));
   const [isLoading, setIsLoading] = useState(false);
-  const [contractAddress, setContractAddress] = useState('');
+  const [contractAddress, setContractAddress] = useState('ct_mgcu3hf44v523o840mx'); // Mock contract address
   const [isDeployMode, setIsDeployMode] = useState(false);
   
   // Deploy form fields
@@ -115,13 +115,27 @@ const ContractForm = ({ onContractConnected }) => {
                 required
               />
             </div>
-            <button
-              type="submit"
-              disabled={isLoading || !contractAddress}
-              className="w-full px-4 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              {isLoading ? 'Connecting...' : 'Connect to Contract'}
-            </button>
+            <div className="space-y-2">
+              <button
+                type="submit"
+                disabled={isLoading || !contractAddress}
+                className="w-full px-4 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                {isLoading ? 'Connecting...' : 'Connect to Contract'}
+              </button>
+              
+              {/* Quick Connect to Mock Contract */}
+              {contractAddress === 'ct_mgcu3hf44v523o840mx' && (
+                <button
+                  type="button"
+                  onClick={handleConnectToExisting}
+                  disabled={isLoading}
+                  className="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
+                >
+                  🚀 Quick Connect to Demo Contract
+                </button>
+              )}
+            </div>
           </form>
         ) : (
           <form onSubmit={handleDeployNew} className="space-y-4">

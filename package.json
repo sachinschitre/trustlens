@@ -7,6 +7,7 @@
     "deploy": "node deployment/deploy.js",
     "deploy:testnet": "node deployment/deploy.js --network testnet",
     "deploy:mock": "node deployment/deploy-mock.js",
+    "deploy:simple": "node deployment/deploy-simple.js",
     "test": "node deployment/test-contract.js",
     "test:contract": "node deployment/test-contract.js",
     "test:mock": "node deployment/test-contract-mock.js",
@@ -15,7 +16,7 @@
     "lint": "echo 'Contract linting requires Aeternity CLI setup'",
     "clean": "rm -f deployment/account.json deployment/deployment-info.json",
     "status": "node -e \"console.log('TrustLens Escrow Contract Ready for Deployment')\"",
-    "help": "echo 'Available commands: deploy, deploy:mock, test, test:mock, setup, clean, status'"
+    "help": "echo 'Available commands: deploy, deploy:mock, deploy:simple, test, test:mock, setup, clean, status'"
   },
   "keywords": [
     "aeternity",

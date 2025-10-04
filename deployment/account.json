@@ -1,6 +1,6 @@
 {
   "publicKey": "ak_2KAcA2Pp3nrR8Wn3SEkDrC2oufkgLf8V1oW9vWgXy7K8x9mN2v",
-  "secretKey": "YourSecretKeyHere",
+  "secretKey": "396373c690d9ff93751654557352888d12be79eb44dd57219b927b4e35e0f084",
   "address": "ak_mockAddress123456789",
   "note": "This is an example account file. Copy this to account.json and replace with your actual testnet account details."
 }

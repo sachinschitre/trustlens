@@ -169,7 +169,7 @@ function App() {
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Left Column */}
                 <div className="lg:col-span-1 space-y-6">
-                  <WalletConnection />
+                  <WalletConnection onWalletConnected={() => setStep(2)} />
 
                   {/* Contract Selection */}
                   {step >= 2 && (

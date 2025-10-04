@@ -3,7 +3,7 @@ import { Wallet, LogOut, User, ExternalLink, Copy, AlertTriangle } from 'lucide-
 import { useWallet } from '../contexts/WalletContext';
 import toast from 'react-hot-toast';
 
-const WalletConnection = () => {
+const WalletConnection = ({ onWalletConnected }) => {
   const { 
     account, 
     balance,
@@ -22,8 +22,12 @@ const WalletConnection = () => {
   React.useEffect(() => {
     if (isConnected && account) {
       fetchBalance();
+      // Notify parent component that wallet is connected
+      if (onWalletConnected) {
+        onWalletConnected();
+      }
     }
-  }, [isConnected, account, fetchBalance]);
+  }, [isConnected, account, fetchBalance, onWalletConnected]);
 
   const handleCopyAddress = () => {
     if (account?.address) {

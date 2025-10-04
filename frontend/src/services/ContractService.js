@@ -17,23 +17,24 @@ class ContractService {
       throw new Error('Wallet not connected');
     }
 
-    try {
-      // For now, we'll use mock data since we don't have the full Aeternity SDK
-      // In production, this would call the contract's get_project_details function
-      this.contract = {
-        address: contractAddress,
-        mockContract: false // This would be a real contract in production
-      };
-      
-      // Mock project details - in production, fetch from contract
-      this.projectDetails = {
-        client: 'ak_clientAddress123456789',
-        freelancer: 'ak_freelancerAddress987654321',
-        mediator: 'ak_mediatorAddress456789123',
-        amount: 1000000000000000000, // 1 AE in aettos
-        deadline: Math.floor(Date.now() / 1000) + (30 * 24 * 60 * 60), // 30 days
-        disputed: false
-      };
+        try {
+          // For now, we'll use mock data since we don't have the full Aeternity SDK
+          // In production, this would call the contract's get_project_details function
+          this.contract = {
+            address: contractAddress,
+            mockContract: false // This would be a real contract in production
+          };
+          
+          // Use the actual mock deployment details
+          this.projectDetails = {
+            client: 'ak_mockAddress123456789',
+            freelancer: 'ak_freelancer123456789',
+            mediator: 'ak_mediator123456789',
+            amount: 1000000000000000000, // 1 AE in aettos
+            deadline: 1762208272, // From mock deployment
+            disputed: false,
+            project_description: 'TrustLens escrow contract deployment test'
+          };
 
       toast.success('Contract connected successfully!');
       return this.contract;

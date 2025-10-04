@@ -1,0 +1,22 @@
+FROM node:18-alpine
+
+# Install build dependencies
+RUN apk add --no-cache python3 make g++
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+COPY aeproject.yaml ./
+
+# Install dependencies
+RUN npm install
+
+# Copy contract and deployment files
+COPY contracts/ ./contracts/
+COPY deployment/ ./deployment/
+
+# Set up deployment
+RUN npm run deploy
+
+CMD ["node", "deployment/test-contract.js"]
