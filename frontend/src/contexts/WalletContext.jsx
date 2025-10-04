@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
+import superheroWalletService from '../services/SuperheroWalletService';
 
 const WalletContext = createContext();
 
@@ -14,62 +15,155 @@ export const useWallet = () => {
 export const WalletProvider = ({ children }) => {
   const [wallet, setWallet] = useState(null);
   const [account, setAccount] = useState(null);
+  const [balance, setBalance] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isAvailable, setIsAvailable] = useState(false);
+
+  // Check wallet availability on mount
+  useEffect(() => {
+    const checkWallet = () => {
+      const status = superheroWalletService.getStatus();
+      setIsAvailable(status.isAvailable);
+      
+      if (status.isConnected && status.account) {
+        setAccount(status.account);
+        setIsConnected(true);
+        setWallet(superheroWalletService.wallet);
+        fetchBalance(status.account.address);
+      }
+    };
+
+    checkWallet();
+    
+    // Check periodically for wallet availability
+    const interval = setInterval(checkWallet, 2000);
+    return () => clearInterval(interval);
+  }, []);
 
   const connectWallet = async () => {
     setLoading(true);
     
-    // Simulate wallet connection
-    setTimeout(() => {
-      try {
-        // Mock wallet connection for demo
-        const mockAccount = 'ak_mockAccountAddress123456789';
-        const mockBalance = 1000000000000000000; // 1 AE in aettos
-        
-        setAccount(mockAccount);
+    try {
+      const result = await superheroWalletService.connect();
+      
+      if (result.success) {
+        setAccount(result.account);
         setIsConnected(true);
-        setWallet({ 
-          address: () => Promise.resolve({ address: mockAccount }),
-          balance: () => Promise.resolve(mockBalance)
-        });
-        toast.success('Mock wallet connected! (Demo mode)');
-      } catch (error) {
-        console.error('Wallet connection error:', error);
-        toast.error(`Connection failed: ${error.message}`);
-      } finally {
-        setLoading(false);
+        setWallet(superheroWalletService.wallet);
+        await fetchBalance(result.account.address);
+        toast.success(`Connected to Superhero Wallet: ${superheroWalletService.formatAddress(result.account.address)}`);
       }
-    }, 1500);
+    } catch (error) {
+      console.error('Wallet connection error:', error);
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const disconnectWallet = () => {
-    setWallet(null);
-    setAccount(null);
-    setIsConnected(false);
-    toast.success('Wallet disconnected');
+  const disconnectWallet = async () => {
+    try {
+      await superheroWalletService.disconnect();
+      setWallet(null);
+      setAccount(null);
+      setBalance(null);
+      setIsConnected(false);
+      toast.success('Wallet disconnected');
+    } catch (error) {
+      console.error('Disconnect error:', error);
+      toast.error('Failed to disconnect wallet');
+    }
   };
 
-  const getBalance = async (address = account) => {
+  const fetchBalance = async (address = account?.address) => {
     if (!address) return null;
     
     try {
-      // Mock balance for demo
-      return 1000000000000000000; // 1 AE
+      const balanceResult = await superheroWalletService.getBalance();
+      const formattedBalance = superheroWalletService.aettosToAE(balanceResult);
+      setBalance(formattedBalance);
+      return formattedBalance;
     } catch (error) {
       console.error('Error fetching balance:', error);
       return null;
     }
   };
 
+  const signTransaction = async (transaction) => {
+    if (!isConnected || !wallet) {
+      throw new Error('Wallet not connected');
+    }
+    
+    try {
+      return await superheroWalletService.signTransaction(transaction);
+    } catch (error) {
+      console.error('Transaction signing error:', error);
+      throw error;
+    }
+  };
+
+  const signMessage = async (message) => {
+    if (!isConnected || !wallet) {
+      throw new Error('Wallet not connected');
+    }
+    
+    try {
+      return await superheroWalletService.signMessage(message);
+    } catch (error) {
+      console.error('Message signing error:', error);
+      throw error;
+    }
+  };
+
+  const deployContract = async (contractSource, initParams = []) => {
+    if (!isConnected || !wallet) {
+      throw new Error('Wallet not connected');
+    }
+    
+    try {
+      return await superheroWalletService.deployContract(contractSource, initParams);
+    } catch (error) {
+      console.error('Contract deployment error:', error);
+      throw error;
+    }
+  };
+
+  const callContract = async (contractAddress, functionName, params = [], options = {}) => {
+    if (!isConnected || !wallet) {
+      throw new Error('Wallet not connected');
+    }
+    
+    try {
+      return await superheroWalletService.callContract(contractAddress, functionName, params, options);
+    } catch (error) {
+      console.error('Contract call error:', error);
+      throw error;
+    }
+  };
+
+  const getNetworkInfo = () => {
+    return superheroWalletService.getNetworkInfo();
+  };
+
   const value = {
     wallet,
     account,
+    balance,
     isConnected,
+    isAvailable,
     loading,
     connectWallet,
     disconnectWallet,
-    getBalance
+    fetchBalance,
+    signTransaction,
+    signMessage,
+    deployContract,
+    callContract,
+    getNetworkInfo,
+    formatAddress: superheroWalletService.formatAddress,
+    aettosToAE: superheroWalletService.aettosToAE,
+    aeToAettos: superheroWalletService.aeToAettos
   };
 
   return (

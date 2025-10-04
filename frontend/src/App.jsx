@@ -7,6 +7,7 @@ import ContractForm from './components/ContractForm';
 import ContractActions from './components/ContractActions';
 import TransactionStatus from './components/TransactionStatus';
 import SolanaNftViewer from './components/SolanaNftViewer';
+import WalletStatusIndicator from './components/WalletStatusIndicator';
 import { FileText, BarChart3 } from 'lucide-react';
 import './App.css';
 
@@ -80,42 +81,45 @@ function App() {
                   <p className="text-sm text-gray-500">Cross-Chain Escrow Platform</p>
                 </div>
               </div>
-              <div className="flex items-center space-x-4">
-                {/* Tab Navigation */}
-                <div className="flex bg-gray-100 rounded-lg p-1">
-                  <button
-                    onClick={() => setActiveTab('escrow')}
-                    className={`px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-2 ${
-                      activeTab === 'escrow'
-                        ? 'bg-white text-primary-600 shadow-sm'
-                        : 'text-gray-600 hover:text-gray-900'
-                    }`}
-                  >
-                    <FileText className="h-4 w-4" />
-                    <span>Escrow</span>
-                  </button>
-                  <button
-                    onClick={() => setActiveTab('nfts')}
-                    className={`px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-2 ${
-                      activeTab === 'nfts'
-                        ? 'bg-white text-primary-600 shadow-sm'
-                        : 'text-gray-600 hover:text-gray-900'
-                    }`}
-                  >
-                    <BarChart3 className="h-4 w-4" />
-                    <span>NFT Receipts</span>
-                  </button>
+                <div className="flex items-center space-x-4">
+                  {/* Wallet Status Indicator */}
+                  <WalletStatusIndicator />
+                  
+                  {/* Tab Navigation */}
+                  <div className="flex bg-gray-100 rounded-lg p-1">
+                    <button
+                      onClick={() => setActiveTab('escrow')}
+                      className={`px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-2 ${
+                        activeTab === 'escrow'
+                          ? 'bg-white text-primary-600 shadow-sm'
+                          : 'text-gray-600 hover:text-gray-900'
+                      }`}
+                    >
+                      <FileText className="h-4 w-4" />
+                      <span>Escrow</span>
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('nfts')}
+                      className={`px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-2 ${
+                        activeTab === 'nfts'
+                          ? 'bg-white text-primary-600 shadow-sm'
+                          : 'text-gray-600 hover:text-gray-900'
+                      }`}
+                    >
+                      <BarChart3 className="h-4 w-4" />
+                      <span>NFT Receipts</span>
+                    </button>
+                  </div>
+                  
+                  {contractService && activeTab === 'escrow' && (
+                    <button
+                      onClick={handleNewContract}
+                      className="px-3 py-1 text-xs bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors"
+                    >
+                      New Contract
+                    </button>
+                  )}
                 </div>
-                
-                {contractService && activeTab === 'escrow' && (
-                  <button
-                    onClick={handleNewContract}
-                    className="px-3 py-1 text-xs bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors"
-                  >
-                    New Contract
-                  </button>
-                )}
-              </div>
             </div>
           </div>
         </header>
