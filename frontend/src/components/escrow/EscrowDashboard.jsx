@@ -24,6 +24,13 @@ export const EscrowDashboard = () => {
   const [step, setStep] = useState(1); // 1: Connect Wallet, 2: Choose Contract, 3: Interact
   const [useEnhancedActions, setUseEnhancedActions] = useState(true);
 
+  // Auto-advance steps based on wallet connection
+  React.useEffect(() => {
+    if (isConnected && step === 1) {
+      setStep(2);
+    }
+  }, [isConnected, step]);
+
   const handleContractConnected = (service, deployResult = null) => {
     // Only set contractService for basic mode
     if (!useEnhancedActions) {
@@ -54,6 +61,13 @@ export const EscrowDashboard = () => {
     // Enhanced mode is ready, advance to step 3
     setStep(3);
   };
+
+  // Auto-advance to step 3 if wallet is connected and we're using enhanced mode
+  React.useEffect(() => {
+    if (isConnected && useEnhancedActions && step === 2) {
+      setStep(3);
+    }
+  }, [isConnected, useEnhancedActions, step]);
 
   const getStepTitle = () => {
     switch (step) {

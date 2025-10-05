@@ -80,38 +80,66 @@ class AIVerificationService {
   mockVerification(taskDescription, deliverySummary) {
     logger.info('Using mock AI verification');
     
-    // Simple mock logic based on keyword matching
-    const taskWords = taskDescription.toLowerCase().split(/\s+/);
-    const deliveryWords = deliverySummary.toLowerCase().split(/\s+/);
+    // Enhanced mock logic with more balanced scoring
+    const taskWords = taskDescription.toLowerCase().split(/\s+/).filter(word => word.length > 3);
+    const deliveryWords = deliverySummary.toLowerCase().split(/\s+/).filter(word => word.length > 3);
     
     // Calculate similarity based on common words
-    const commonWords = taskWords.filter(word => 
-      deliveryWords.includes(word) && word.length > 3
-    );
+    const commonWords = taskWords.filter(word => deliveryWords.includes(word));
+    const similarity = commonWords.length / Math.max(taskWords.length, deliveryWords.length, 1);
     
-    const similarity = commonWords.length / Math.max(taskWords.length, deliveryWords.length);
-    
-    // Generate mock score and recommendation
+    // Enhanced scoring logic with more realistic distribution
     let completionScore;
     let recommendation;
     
-    if (similarity > 0.7) {
-      completionScore = Math.floor(75 + Math.random() * 25); // 75-100
+    // Add some randomness and context awareness
+    const taskLength = taskDescription.length;
+    const deliveryLength = deliverySummary.length;
+    const lengthRatio = deliveryLength / Math.max(taskLength, 1);
+    
+    // Base score from similarity
+    let baseScore = similarity * 100;
+    
+    // Adjust based on delivery length (more detailed delivery = higher score)
+    if (lengthRatio > 1.5) baseScore += 10; // Detailed delivery
+    if (lengthRatio < 0.5) baseScore -= 15; // Too brief
+    
+    // Add some realistic variance
+    const variance = (Math.random() - 0.5) * 20; // ±10 points
+    completionScore = Math.max(0, Math.min(100, Math.round(baseScore + variance)));
+    
+    // More balanced recommendation logic
+    if (completionScore >= 75) {
       recommendation = 'release';
-    } else if (similarity > 0.4) {
-      completionScore = Math.floor(50 + Math.random() * 25); // 50-75
-      recommendation = Math.random() > 0.5 ? 'release' : 'dispute';
+    } else if (completionScore >= 60) {
+      // 60-74: More likely to release with some variance
+      recommendation = Math.random() > 0.3 ? 'release' : 'dispute';
+    } else if (completionScore >= 40) {
+      // 40-59: Mixed recommendations
+      recommendation = Math.random() > 0.6 ? 'release' : 'dispute';
     } else {
-      completionScore = Math.floor(20 + Math.random() * 30); // 20-50
+      // Below 40: Dispute
       recommendation = 'dispute';
+    }
+    
+    // Generate contextual reasoning
+    let reasoning;
+    if (completionScore >= 75) {
+      reasoning = `High-quality delivery detected. Task requirements appear to be substantially met with ${(similarity * 100).toFixed(1)}% keyword alignment. Recommendation: Release funds.`;
+    } else if (completionScore >= 60) {
+      reasoning = `Moderate completion quality. Found ${commonWords.length} matching requirements with ${(similarity * 100).toFixed(1)}% alignment. Some gaps detected but core work appears complete.`;
+    } else if (completionScore >= 40) {
+      reasoning = `Partial completion detected. Only ${(similarity * 100).toFixed(1)}% requirement alignment found. Significant gaps or quality issues present.`;
+    } else {
+      reasoning = `Low completion quality. Minimal requirement alignment (${(similarity * 100).toFixed(1)}%). Major deliverables appear missing or incomplete.`;
     }
     
     const mockResult = {
       completionScore,
       recommendation,
-      reasoning: `Mock analysis: Found ${commonWords.length} matching keywords out of ${Math.max(taskWords.length, deliveryWords.length)} total words. Similarity score: ${(similarity * 100).toFixed(1)}%. Based on this analysis, the task appears to be ${completionScore >= 70 ? 'well completed' : 'incompletely delivered'}.`,
+      reasoning,
       timestamp: new Date().toISOString(),
-      model: 'mock-ai-verifier-v1.0'
+      model: 'mock-ai-verifier-v2.0'
     };
     
     logger.info('Mock verification completed', {
