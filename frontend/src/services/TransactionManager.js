@@ -115,7 +115,7 @@ class TransactionManager {
   /**
    * Wait for transaction confirmation
    */
-  async waitForConfirmation(txHash, timeout = 30000) {
+  async waitForConfirmation(txHash, timeout = 10000) {
     return new Promise((resolve, reject) => {
       const timeoutId = setTimeout(() => {
         this.failTransaction(txHash, new Error('Transaction timeout'));

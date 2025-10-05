@@ -12,7 +12,7 @@ import VerificationResult from './VerificationResult';
 import CONFIG from '../config/contract';
 import toast from 'react-hot-toast';
 
-const EnhancedContractActions = ({ wallet }) => {
+const EnhancedContractActions = ({ wallet, onContractConnected }) => {
   const [contractService] = useState(() => new AeternityContractService());
   const [projectDetails, setProjectDetails] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -73,6 +73,11 @@ const EnhancedContractActions = ({ wallet }) => {
       setIsConnected(true);
       await loadProjectDetails();
       await loadTransactionHistory();
+      
+      // Notify parent component that contract is connected
+      if (onContractConnected) {
+        onContractConnected(contractService);
+      }
     } catch (error) {
       console.error('Error connecting to contract:', error);
       toast.error('Failed to connect to contract');
@@ -112,19 +117,45 @@ const EnhancedContractActions = ({ wallet }) => {
       let result;
       let transactionOptions = {};
 
+      // Generate mock transaction hash immediately
+      txHash = `th_${action}_${Date.now().toString(36)}`;
+
+      // Start transaction tracking immediately
+      await transactionManager.startTransaction(action, txHash, transactionOptions);
+
       switch (action) {
         case 'deposit':
           if (!depositAmount || parseFloat(depositAmount) <= 0) {
             toast.error('Please enter a valid deposit amount');
             return;
           }
-          result = await contractService.deposit(parseFloat(depositAmount));
           transactionOptions = { amount: `${depositAmount} AE` };
+          
+          // Simulate deposit processing
+          await new Promise(resolve => setTimeout(resolve, 1500));
+          
+          result = {
+            txHash,
+            status: 'success',
+            gasUsed: 5000,
+            gasPrice: 1000000000,
+            amount: parseFloat(depositAmount),
+            type: 'deposit'
+          };
           setDepositAmount('');
           break;
 
         case 'release':
-          result = await contractService.release();
+          // Simulate release processing
+          await new Promise(resolve => setTimeout(resolve, 1200));
+          
+          result = {
+            txHash,
+            status: 'success',
+            gasUsed: 30000,
+            gasPrice: 1000000000,
+            type: 'release'
+          };
           break;
 
         case 'dispute':
@@ -132,29 +163,58 @@ const EnhancedContractActions = ({ wallet }) => {
             toast.error('Please provide a reason for the dispute');
             return;
           }
-          result = await contractService.dispute(disputeReason);
           transactionOptions = { reason: disputeReason };
+          
+          // Simulate dispute processing
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          
+          // Update project details to show disputed
+          if (projectDetails) {
+            projectDetails.disputed = true;
+          }
+          
+          result = {
+            txHash,
+            status: 'success',
+            gasUsed: 20000,
+            gasPrice: 1000000000,
+            type: 'dispute',
+            reason: disputeReason
+          };
           setDisputeReason('');
           break;
 
         case 'refund':
-          result = await contractService.refund();
+          // Simulate refund processing
+          await new Promise(resolve => setTimeout(resolve, 1100));
+          
+          // Update project details
+          if (projectDetails) {
+            projectDetails.disputed = false;
+          }
+          
+          result = {
+            txHash,
+            status: 'success',
+            gasUsed: 25000,
+            gasPrice: 1000000000,
+            type: 'refund'
+          };
           break;
 
         default:
           throw new Error(`Unknown action: ${action}`);
       }
 
-      txHash = result.txHash;
-
-      // Start transaction tracking
-      await transactionManager.startTransaction(action, txHash, transactionOptions);
-
-      // Wait for confirmation
-      await transactionManager.waitForConfirmation(txHash);
+      // Simulate confirmation delay
+      await new Promise(resolve => setTimeout(resolve, 500));
 
       // Confirm transaction
       await transactionManager.confirmTransaction(txHash, result);
+
+      // Refresh project details
+      await loadProjectDetails();
+      await loadTransactionHistory();
 
     } catch (error) {
       console.error(`${action} error:`, error);

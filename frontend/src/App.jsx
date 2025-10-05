@@ -183,47 +183,46 @@ function App() {
                 {/* Right Column */}
                 <div className="lg:col-span-2 space-y-6">
                   {/* Contract Actions */}
-                  {contractService && (
-                    <>
-                      {useEnhancedActions ? (
-                        <EnhancedContractActions 
-                          wallet={contractService.wallet}
-                        />
-                      ) : (
-                        <ContractActions 
-                          contractService={contractService} 
-                          onTransactionComplete={handleTransactionComplete}
-                        />
-                      )}
-                      
-                      {/* Toggle Button */}
-                      <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <h4 className="text-sm font-medium text-gray-900">
-                              Contract Integration Mode
-                            </h4>
-                            <p className="text-xs text-gray-500 mt-1">
-                              {useEnhancedActions 
-                                ? 'Enhanced mode with transaction manager and config integration' 
-                                : 'Basic mode with original contract service'
-                              }
-                            </p>
-                          </div>
-                          <button
-                            onClick={() => setUseEnhancedActions(!useEnhancedActions)}
-                            className={`px-3 py-1 text-xs rounded-md transition-colors ${
-                              useEnhancedActions 
-                                ? 'bg-primary-100 text-primary-800 hover:bg-primary-200' 
-                                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                            }`}
-                          >
-                            {useEnhancedActions ? 'Enhanced Mode' : 'Basic Mode'}
-                          </button>
-                        </div>
-                      </div>
-                    </>
+                  {useEnhancedActions ? (
+                    <EnhancedContractActions 
+                      wallet={contractService?.wallet}
+                      onContractConnected={handleContractConnected}
+                    />
+                  ) : (
+                    contractService && (
+                      <ContractActions 
+                        contractService={contractService} 
+                        onTransactionComplete={handleTransactionComplete}
+                      />
+                    )
                   )}
+
+                  {/* Toggle Button */}
+                  <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="text-sm font-medium text-gray-900">
+                          Contract Integration Mode
+                        </h4>
+                        <p className="text-xs text-gray-500 mt-1">
+                          {useEnhancedActions 
+                            ? 'Enhanced mode with transaction manager and config integration' 
+                            : 'Basic mode with original contract service'
+                          }
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => setUseEnhancedActions(!useEnhancedActions)}
+                        className={`px-3 py-1 text-xs rounded-md transition-colors ${
+                          useEnhancedActions 
+                            ? 'bg-primary-100 text-primary-800 hover:bg-primary-200' 
+                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                        }`}
+                      >
+                        {useEnhancedActions ? 'Enhanced Mode' : 'Basic Mode'}
+                      </button>
+                    </div>
+                  </div>
 
                   {/* Recent Transaction Status */}
                   {recentTransaction && (
@@ -231,7 +230,7 @@ function App() {
                   )}
 
                   {/* Welcome Message */}
-                  {!contractService && step < 2 && (
+                  {(!contractService || useEnhancedActions) && step < 2 && (
                     <div className="bg-white rounded-lg shadow-md p-8 border border-gray-200 text-center">
                       <div className="bg-blue-100 p-4 rounded-full w-fit mx-auto mb-6">
                         <span className="text-2xl">🚀</span>
