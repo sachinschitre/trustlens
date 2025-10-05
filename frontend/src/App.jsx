@@ -10,6 +10,8 @@ import { SolanaWalletProvider } from './contexts/SolanaWalletContext';
 import { ThemeProvider } from './theme/ThemeProvider';
 import DashboardLayout from './components/layout/DashboardLayout';
 import DashboardOverview from './components/dashboard/DashboardOverview';
+import EscrowDashboard from './components/escrow/EscrowDashboard';
+import AIVerifierDashboard from './components/ai/AIVerifierDashboard';
 import Footer from './components/layout/Footer';
 import WalletConnection from './components/WalletConnection';
 import ContractForm from './components/ContractForm';
@@ -74,6 +76,9 @@ function App() {
         return <DashboardOverview />;
       
       case 'escrow':
+        return <EscrowDashboard />;
+      
+      case 'escrow-old':
         return (
           <div className="space-y-8">
             {/* Welcome Message */}
@@ -235,16 +240,7 @@ function App() {
         );
 
       case 'ai':
-        return (
-          <div className="text-center">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-              AI Verification
-            </h1>
-            <p className="text-gray-600 dark:text-gray-300">
-              AI-powered task verification coming soon...
-            </p>
-          </div>
-        );
+        return <AIVerifierDashboard />;
 
       case 'nfts':
         return <SolanaNftViewer />;
