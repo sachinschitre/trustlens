@@ -16,11 +16,14 @@ export const ThemeToggle = ({ className = '' }) => {
   
   try {
     const themeContext = useTheme();
-    theme = themeContext?.theme || 'light';
-    toggleTheme = themeContext?.toggleTheme || (() => {});
-    isDark = themeContext?.isDark || false;
+    if (themeContext) {
+      theme = themeContext.theme || 'light';
+      toggleTheme = themeContext.toggleTheme || (() => {});
+      isDark = themeContext.isDark || false;
+    }
   } catch (error) {
-    console.warn('ThemeProvider not available, using light theme as fallback');
+    // ThemeProvider not available during initial render - this is normal
+    // Don't log warnings as it's expected behavior
   }
 
   return (

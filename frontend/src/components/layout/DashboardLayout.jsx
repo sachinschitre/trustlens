@@ -17,9 +17,11 @@ export const DashboardLayout = ({ children }) => {
   let theme = 'light';
   try {
     const themeContext = useTheme();
-    theme = themeContext?.theme || 'light';
+    if (themeContext) {
+      theme = themeContext.theme || 'light';
+    }
   } catch (error) {
-    console.warn('ThemeProvider not available, using light theme as fallback');
+    // ThemeProvider not available during initial render - this is normal
   }
 
   const sidebarWidth = sidebarCollapsed ? '4rem' : '16rem';

@@ -193,7 +193,7 @@ export const DashboardOverview = () => {
                     <Button
                       onClick={handleInstallWallet}
                       className="mx-auto"
-                      icon={ExternalLink}
+                      icon={<ExternalLink className="w-4 h-4" />}
                     >
                       Install Superhero Wallet
                     </Button>
@@ -222,7 +222,7 @@ export const DashboardOverview = () => {
                       disabled={loading}
                       loading={loading}
                       className="mx-auto"
-                      icon={Wallet}
+                      icon={<Wallet className="w-4 h-4" />}
                     >
                       {loading ? 'Connecting...' : 'Connect Superhero Wallet'}
                     </Button>
@@ -379,16 +379,16 @@ export const DashboardOverview = () => {
             <div className="space-y-4">
               {isConnected ? (
                 <>
-                  <Button className="w-full" size="lg" icon={Shield}>
+                  <Button className="w-full" size="lg" icon={<Shield className="w-4 h-4" />}>
                     Create New Escrow
                   </Button>
-                  <Button variant="outline" className="w-full" size="lg" icon={Activity}>
+                  <Button variant="outline" className="w-full" size="lg" icon={<Activity className="w-4 h-4" />}>
                     AI Verification
                   </Button>
-                  <Button variant="outline" className="w-full" size="lg" icon={ExternalLink}>
+                  <Button variant="outline" className="w-full" size="lg" icon={<ExternalLink className="w-4 h-4" />}>
                     View NFT Receipts
                   </Button>
-                  <Button variant="outline" className="w-full" size="lg" icon={Clock}>
+                  <Button variant="outline" className="w-full" size="lg" icon={<Clock className="w-4 h-4" />}>
                     Transaction History
                   </Button>
                 </>
@@ -398,7 +398,7 @@ export const DashboardOverview = () => {
                     disabled 
                     className="w-full" 
                     size="lg" 
-                    icon={Shield}
+                    icon={<Shield className="w-4 h-4" />}
                     title="Connect wallet to create escrow"
                   >
                     Create New Escrow
@@ -408,7 +408,7 @@ export const DashboardOverview = () => {
                     variant="outline" 
                     className="w-full" 
                     size="lg" 
-                    icon={Activity}
+                    icon={<Activity className="w-4 h-4" />}
                     title="Connect wallet for AI verification"
                   >
                     AI Verification
@@ -418,7 +418,7 @@ export const DashboardOverview = () => {
                     variant="outline" 
                     className="w-full" 
                     size="lg" 
-                    icon={ExternalLink}
+                    icon={<ExternalLink className="w-4 h-4" />}
                     title="Connect wallet to view NFTs"
                   >
                     View NFT Receipts
@@ -428,7 +428,7 @@ export const DashboardOverview = () => {
                     variant="outline" 
                     className="w-full" 
                     size="lg" 
-                    icon={Clock}
+                    icon={<Clock className="w-4 h-4" />}
                     title="Connect wallet to view history"
                   >
                     Transaction History
