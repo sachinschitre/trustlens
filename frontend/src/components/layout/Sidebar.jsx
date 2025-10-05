@@ -18,11 +18,11 @@ import TrustLensLogo from '../../assets/logo/TrustLensLogo';
 import { useTheme } from '../../theme/ThemeProvider';
 
 const navigationItems = [
-  { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, href: '/dashboard' },
-  { id: 'escrows', label: 'Escrows', icon: Shield, href: '/escrows' },
-  { id: 'ai-verifier', label: 'AI Verifier', icon: Brain, href: '/ai-verifier' },
-  { id: 'nft-receipts', label: 'NFT Receipts', icon: ImageIcon, href: '/nft-receipts' },
-  { id: 'settings', label: 'Settings', icon: Settings, href: '/settings' },
+  { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { id: 'escrow', label: 'Escrow', icon: Shield },
+  { id: 'ai', label: 'AI Verifier', icon: Brain },
+  { id: 'nfts', label: 'NFT Receipts', icon: ImageIcon },
+  { id: 'settings', label: 'Settings', icon: Settings },
 ];
 
 export const Sidebar = ({ 

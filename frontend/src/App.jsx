@@ -73,7 +73,7 @@ function App() {
   const renderContent = () => {
     switch (currentView) {
       case 'dashboard':
-        return <DashboardOverview />;
+        return <DashboardOverview onNavigate={setCurrentView} />;
       
       case 'escrow':
         return <EscrowDashboard />;
@@ -266,7 +266,10 @@ function App() {
     <ThemeProvider>
       <WalletProvider>
         <SolanaWalletProvider>
-          <DashboardLayout>
+          <DashboardLayout 
+            currentView={currentView}
+            onNavigate={setCurrentView}
+          >
             {renderContent()}
             <Footer />
           </DashboardLayout>

@@ -22,7 +22,7 @@ import { Button } from '../ui/Button';
 import { useWallet } from '../../contexts/WalletContext';
 import toast from 'react-hot-toast';
 
-export const DashboardOverview = () => {
+export const DashboardOverview = ({ onNavigate }) => {
   const { 
     account, 
     balance,
@@ -379,16 +379,39 @@ export const DashboardOverview = () => {
             <div className="space-y-4">
               {isConnected ? (
                 <>
-                  <Button className="w-full" size="lg" icon={<Shield className="w-4 h-4" />}>
+                  <Button 
+                    className="w-full" 
+                    size="lg" 
+                    icon={<Shield className="w-4 h-4" />}
+                    onClick={() => onNavigate && onNavigate('escrow')}
+                  >
                     Create New Escrow
                   </Button>
-                  <Button variant="outline" className="w-full" size="lg" icon={<Activity className="w-4 h-4" />}>
+                  <Button 
+                    variant="outline" 
+                    className="w-full" 
+                    size="lg" 
+                    icon={<Activity className="w-4 h-4" />}
+                    onClick={() => onNavigate && onNavigate('ai')}
+                  >
                     AI Verification
                   </Button>
-                  <Button variant="outline" className="w-full" size="lg" icon={<ExternalLink className="w-4 h-4" />}>
+                  <Button 
+                    variant="outline" 
+                    className="w-full" 
+                    size="lg" 
+                    icon={<ExternalLink className="w-4 h-4" />}
+                    onClick={() => onNavigate && onNavigate('nfts')}
+                  >
                     View NFT Receipts
                   </Button>
-                  <Button variant="outline" className="w-full" size="lg" icon={<Clock className="w-4 h-4" />}>
+                  <Button 
+                    variant="outline" 
+                    className="w-full" 
+                    size="lg" 
+                    icon={<Clock className="w-4 h-4" />}
+                    onClick={() => onNavigate && onNavigate('settings')}
+                  >
                     Transaction History
                   </Button>
                 </>

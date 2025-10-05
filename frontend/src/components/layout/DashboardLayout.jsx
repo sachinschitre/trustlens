@@ -9,9 +9,8 @@ import { useTheme } from '../../theme/ThemeProvider';
 import Sidebar from './Sidebar';
 import TopNavbar from './TopNavbar';
 
-export const DashboardLayout = ({ children }) => {
+export const DashboardLayout = ({ children, currentView, onNavigate }) => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [activeNavItem, setActiveNavItem] = useState('dashboard');
   
   // Safely get theme with fallback
   let theme = 'light';
@@ -31,9 +30,9 @@ export const DashboardLayout = ({ children }) => {
   };
 
   const handleNavigate = (itemId) => {
-    setActiveNavItem(itemId);
-    // Here you would typically use React Router to navigate
-    console.log('Navigate to:', itemId);
+    if (onNavigate) {
+      onNavigate(itemId);
+    }
   };
 
   const handleWalletConnect = () => {
@@ -49,12 +48,12 @@ export const DashboardLayout = ({ children }) => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       {/* Sidebar */}
-      <Sidebar
-        isCollapsed={sidebarCollapsed}
-        onToggleCollapse={handleToggleSidebar}
-        activeItem={activeNavItem}
-        onNavigate={handleNavigate}
-      />
+            <Sidebar 
+              isCollapsed={sidebarCollapsed}
+              onToggleCollapse={handleToggleSidebar}
+              activeItem={currentView}
+              onNavigate={handleNavigate}
+            />
 
       {/* Top Navbar */}
       <TopNavbar
