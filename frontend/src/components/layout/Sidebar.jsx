@@ -31,7 +31,14 @@ export const Sidebar = ({
   activeItem = 'dashboard',
   onNavigate 
 }) => {
-  const { theme } = useTheme();
+  // Safely get theme with fallback
+  let theme = 'light';
+  try {
+    const themeContext = useTheme();
+    theme = themeContext?.theme || 'light';
+  } catch (error) {
+    console.warn('ThemeProvider not available, using light theme as fallback');
+  }
 
   return (
     <motion.aside

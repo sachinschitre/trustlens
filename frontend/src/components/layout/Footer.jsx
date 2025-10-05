@@ -10,7 +10,14 @@ import TrustLensLogo from '../../assets/logo/TrustLensLogo';
 import { useTheme } from '../../theme/ThemeProvider';
 
 export const Footer = () => {
-  const { theme } = useTheme();
+  // Safely get theme with fallback
+  let theme = 'light';
+  try {
+    const themeContext = useTheme();
+    theme = themeContext?.theme || 'light';
+  } catch (error) {
+    console.warn('ThemeProvider not available, using light theme as fallback');
+  }
 
   const socialLinks = [
     {

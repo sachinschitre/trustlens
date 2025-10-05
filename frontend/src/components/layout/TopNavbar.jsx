@@ -16,7 +16,15 @@ export const TopNavbar = ({
   onProfileClick 
 }) => {
   const { account, isConnected, balance } = useWallet();
-  const { theme } = useTheme();
+  
+  // Safely get theme with fallback
+  let theme = 'light';
+  try {
+    const themeContext = useTheme();
+    theme = themeContext?.theme || 'light';
+  } catch (error) {
+    console.warn('ThemeProvider not available, using light theme as fallback');
+  }
 
   return (
     <motion.header
