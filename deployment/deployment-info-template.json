@@ -1,0 +1,16 @@
+{
+  "contractAddress": "REPLACE_WITH_ACTUAL_CONTRACT_ADDRESS",
+  "transactionHash": "REPLACE_WITH_ACTUAL_TRANSACTION_HASH",
+  "deployerAddress": "REPLACE_WITH_YOUR_WALLET_ADDRESS",
+  "deployParams": {
+    "client": "REPLACE_WITH_CLIENT_ADDRESS",
+    "freelancer": "REPLACE_WITH_FREELANCER_ADDRESS",
+    "mediator": "REPLACE_WITH_MEDIATOR_ADDRESS",
+    "amount": 1000000000000000000,
+    "deadline": 1762292472,
+    "project_description": "TrustLens escrow contract deployment"
+  },
+  "deployedAt": "2025-10-05T21:41:12.376Z",
+  "network": "testnet",
+  "note": "Update this file after successful deployment"
+}

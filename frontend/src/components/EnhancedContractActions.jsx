@@ -16,7 +16,7 @@ import toast from 'react-hot-toast';
 
 const EnhancedContractActions = ({ wallet, onContractConnected }) => {
   const { account } = useWallet();
-  const { addTransaction, updateTransaction } = useTransactions();
+  const { addTransaction, updateTransaction, showTransactionConfirmation } = useTransactions();
   const [contractService] = useState(() => new AeternityContractService());
   const [projectDetails, setProjectDetails] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -175,6 +175,14 @@ const EnhancedContractActions = ({ wallet, onContractConnected }) => {
             gasPrice: result.gasPrice
           });
           
+          // Show transaction confirmation modal
+          showTransactionConfirmation({
+            type: 'deposit',
+            tx_hash: txHash,
+            amount: `${depositAmount} AE`,
+            timestamp: new Date().toISOString()
+          });
+          
           setDepositAmount('');
           break;
 
@@ -206,6 +214,14 @@ const EnhancedContractActions = ({ wallet, onContractConnected }) => {
             blockNumber: Math.floor(Math.random() * 1000000) + 1000000,
             gasUsed: result.gasUsed,
             gasPrice: result.gasPrice
+          });
+          
+          // Show transaction confirmation modal
+          showTransactionConfirmation({
+            type: 'release',
+            tx_hash: txHash,
+            amount: 'Contract Release',
+            timestamp: new Date().toISOString()
           });
           break;
 
@@ -251,6 +267,14 @@ const EnhancedContractActions = ({ wallet, onContractConnected }) => {
             gasPrice: result.gasPrice
           });
           
+          // Show transaction confirmation modal
+          showTransactionConfirmation({
+            type: 'dispute',
+            tx_hash: txHash,
+            amount: 'Dispute Filed',
+            timestamp: new Date().toISOString()
+          });
+          
           setDisputeReason('');
           break;
 
@@ -287,6 +311,14 @@ const EnhancedContractActions = ({ wallet, onContractConnected }) => {
             blockNumber: Math.floor(Math.random() * 1000000) + 1000000,
             gasUsed: result.gasUsed,
             gasPrice: result.gasPrice
+          });
+          
+          // Show transaction confirmation modal
+          showTransactionConfirmation({
+            type: 'refund',
+            tx_hash: txHash,
+            amount: 'Refund Processed',
+            timestamp: new Date().toISOString()
           });
           break;
 

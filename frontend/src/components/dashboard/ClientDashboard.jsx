@@ -17,15 +17,30 @@ import {
   TrendingUp,
   Award,
   Calendar,
-  MessageCircle
+  MessageCircle,
+  CheckCircle,
+  AlertTriangle
 } from 'lucide-react';
 import Card from '../ui/Card';
 import Button from '../ui/Button';
 import { Input } from '../ui/Input';
+import { useTransactions } from '../../contexts/TransactionContext';
 
 const ClientDashboard = ({ user }) => {
+  const { showTransactionConfirmation } = useTransactions();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFilter, setSelectedFilter] = useState('all');
+
+  // Test function to demonstrate transaction confirmation modal
+  const testTransactionModal = (type) => {
+    const testTxHash = `th_${Math.random().toString(36).substr(2, 9)}${Math.random().toString(36).substr(2, 9)}`;
+    showTransactionConfirmation({
+      type: type,
+      tx_hash: testTxHash,
+      amount: type === 'deposit' ? '5.0 AE' : type === 'release' ? 'Contract Release' : 'Dispute Filed',
+      timestamp: new Date().toISOString()
+    });
+  };
 
   // Mock data for demonstration
   const stats = [
@@ -344,6 +359,42 @@ const ClientDashboard = ({ user }) => {
             <Calendar className="w-5 h-5" />
             <span>Schedule Meeting</span>
           </Button>
+        </div>
+        
+        {/* Test Transaction Modal Buttons */}
+        <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+          <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+            Test Transaction Confirmation Modal:
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => testTransactionModal('deposit')}
+              className="flex items-center justify-center space-x-2"
+            >
+              <DollarSign className="w-4 h-4" />
+              <span>Test Deposit</span>
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => testTransactionModal('release')}
+              className="flex items-center justify-center space-x-2"
+            >
+              <CheckCircle className="w-4 h-4" />
+              <span>Test Release</span>
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => testTransactionModal('dispute')}
+              className="flex items-center justify-center space-x-2"
+            >
+              <AlertTriangle className="w-4 h-4" />
+              <span>Test Dispute</span>
+            </Button>
+          </div>
         </div>
       </Card>
     </div>

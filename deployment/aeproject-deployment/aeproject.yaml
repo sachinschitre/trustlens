@@ -1,0 +1,26 @@
+name: TrustLensEscrow
+version: 1.0.0
+compiler: 8.2.0
+namespace: TrustLens
+contracts:
+  - path: contracts/TrustLensEscrow.aes
+    name: TrustLensEscrow
+networks:
+  testnet:
+    url: https://testnet.aeternity.io
+    compilerUrl: https://compiler.aepps.com
+    internalUrl: https://sdk-testnet.aepps.com
+    gas: 200000
+    gasPrice: 1000000000
+deployment:
+  testnet:
+    contracts:
+      - name: TrustLensEscrow
+        deploy: true
+        args:
+          - ak_YOUR_CLIENT_ADDRESS
+          - ak_YOUR_FREELANCER_ADDRESS
+          - ak_YOUR_MEDIATOR_ADDRESS
+          - 1000000000000000000
+          - 1762292950
+          - "TrustLens escrow contract deployment"

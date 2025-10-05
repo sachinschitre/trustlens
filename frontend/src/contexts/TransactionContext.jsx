@@ -20,6 +20,10 @@ export const TransactionProvider = ({ children }) => {
   const [transactions, setTransactions] = useState([]);
   const [recentTransaction, setRecentTransaction] = useState(null);
   const [loading, setLoading] = useState(false);
+  
+  // Modal state for transaction confirmation
+  const [showTransactionModal, setShowTransactionModal] = useState(false);
+  const [modalTransaction, setModalTransaction] = useState(null);
 
   // Load transactions from localStorage on mount
   useEffect(() => {
@@ -69,6 +73,16 @@ export const TransactionProvider = ({ children }) => {
     });
 
     return newTransaction;
+  };
+
+  const showTransactionConfirmation = (transaction) => {
+    setModalTransaction(transaction);
+    setShowTransactionModal(true);
+  };
+
+  const hideTransactionConfirmation = () => {
+    setShowTransactionModal(false);
+    setModalTransaction(null);
   };
 
   const updateTransaction = (transactionId, updates) => {
@@ -217,7 +231,12 @@ export const TransactionProvider = ({ children }) => {
     getRecentTransactions,
     clearTransactions,
     fetchBlockchainTransactions,
-    setRecentTransaction
+    setRecentTransaction,
+    // Modal functions
+    showTransactionConfirmation,
+    hideTransactionConfirmation,
+    showTransactionModal,
+    modalTransaction
   };
 
   return (

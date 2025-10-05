@@ -7,7 +7,7 @@ import React, { useState } from 'react';
 import { Toaster } from 'react-hot-toast';
 import { WalletProvider } from './contexts/WalletContext';
 import { SolanaWalletProvider } from './contexts/SolanaWalletContext';
-import { TransactionProvider } from './contexts/TransactionContext';
+import { TransactionProvider, useTransactions } from './contexts/TransactionContext';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ThemeProvider } from './theme/ThemeProvider';
 import DashboardLayout from './components/layout/DashboardLayout';
@@ -20,6 +20,7 @@ import AIVerifierDashboard from './components/ai/AIVerifierDashboard';
 import ProfileDashboard from './components/profile/ProfileDashboard';
 import SettingsDashboard from './components/settings/SettingsDashboard';
 import TransactionLedger from './components/ledger/TransactionLedger';
+import TransactionConfirmationModal from './components/modals/TransactionConfirmationModal';
 import Footer from './components/layout/Footer';
 import WalletConnection from './components/WalletConnection';
 import ContractForm from './components/ContractForm';
@@ -35,6 +36,7 @@ import './App.css';
 // Main authenticated app content
 function AuthenticatedApp() {
   const { user, isClient, isFreelancer, isMediator } = useAuth();
+  const { showTransactionModal, modalTransaction, hideTransactionConfirmation } = useTransactions();
   const [contractService, setContractService] = useState(null);
   const [recentTransaction, setRecentTransaction] = useState(null);
   const [step, setStep] = useState(1); // 1: Connect Wallet, 2: Choose Contract, 3: Interact
@@ -465,6 +467,13 @@ function AuthenticatedApp() {
     >
       {renderContent()}
       <Footer />
+      
+      {/* Transaction Confirmation Modal */}
+      <TransactionConfirmationModal
+        isOpen={showTransactionModal}
+        onClose={hideTransactionConfirmation}
+        transaction={modalTransaction}
+      />
     </DashboardLayout>
   );
 }

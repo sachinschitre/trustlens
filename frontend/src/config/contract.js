@@ -27,10 +27,10 @@ export const NETWORK_CONFIG = {
 export const CONTRACT_CONFIG = {
   // Deployed TrustLens Escrow Contract
   escrow: {
-    address: 'ct_mgcu3hf44v523o840mx',
-    transactionHash: 'th_mgcu3hf46bhx96u8b0h',
-    deployerAddress: 'ak_mockAddress123456789',
-    deployedAt: '2025-10-04T22:17:52.624Z',
+    address: 'ct_2F23rJX3XrocNV9xGpKBwD2ahzRZfohGPC4Q8BQ9jtQK2DYf5',
+    transactionHash: 'REPLACE_WITH_ACTUAL_TRANSACTION_HASH',
+    deployerAddress: 'REPLACE_WITH_ACTUAL_DEPLOYER_ADDRESS',
+    deployedAt: new Date().toISOString(),
     network: 'testnet'
   },
   

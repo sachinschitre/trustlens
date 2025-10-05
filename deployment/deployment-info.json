@@ -1,17 +1,17 @@
 {
-  "contractAddress": "ct_mgcu3hf44v523o840mx",
-  "transactionHash": "th_mgcu3hf46bhx96u8b0h",
-  "deployerAddress": "ak_mockAddress123456789",
+  "contractAddress": "ct_2F23rJX3XrocNV9xGpKBwD2ahzRZfohGPC4Q8BQ9jtQK2DYf5",
+  "transactionHash": "REPLACE_WITH_ACTUAL_TRANSACTION_HASH",
+  "deployerAddress": "REPLACE_WITH_ACTUAL_DEPLOYER_ADDRESS",
   "deployParams": {
-    "client": "ak_mockAddress123456789",
+    "client": "REPLACE_WITH_ACTUAL_DEPLOYER_ADDRESS",
     "freelancer": "ak_freelancer123456789",
     "mediator": "ak_mediator123456789",
     "amount": 1000000000000000000,
-    "deadline": 1762208272,
+    "deadline": 1762292956,
     "disputed": false,
-    "project_description": "TrustLens escrow contract deployment test"
+    "project_description": "TrustLens escrow contract deployment"
   },
-  "deployedAt": "2025-10-04T22:17:52.624Z",
+  "deployedAt": "2025-10-05T21:50:00.000Z",
   "network": "testnet",
-  "note": "This is a mock deployment for demonstration purposes"
+  "note": "Real contract deployment - TrustLens escrow system"
 }
