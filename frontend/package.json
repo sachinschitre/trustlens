@@ -15,14 +15,15 @@
     "install:all": "npm install && cd frontend && npm install"
   },
   "dependencies": {
+    "@solana/web3.js": "^1.87.6",
+    "axios": "^1.6.0",
+    "bs58": "^5.0.0",
+    "clsx": "^2.0.0",
+    "framer-motion": "^12.23.22",
+    "lucide-react": "^0.400.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-hot-toast": "^2.4.1",
-    "lucide-react": "^0.400.0",
-    "clsx": "^2.0.0",
-    "axios": "^1.6.0",
-    "@solana/web3.js": "^1.87.6",
-    "bs58": "^5.0.0"
+    "react-hot-toast": "^2.4.1"
   },
   "devDependencies": {
     "@types/react": "^18.2.43",
