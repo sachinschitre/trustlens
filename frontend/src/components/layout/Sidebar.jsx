@@ -11,6 +11,8 @@ import {
   Brain, 
   ImageIcon, 
   Settings,
+  User,
+  FileText,
   ChevronLeft,
   ChevronRight
 } from 'lucide-react';
@@ -22,6 +24,8 @@ const navigationItems = [
   { id: 'escrow', label: 'Escrow', icon: Shield },
   { id: 'ai', label: 'AI Verifier', icon: Brain },
   { id: 'nfts', label: 'NFT Receipts', icon: ImageIcon },
+  { id: 'profile', label: 'Profile', icon: User },
+  { id: 'ledger', label: 'Transaction Ledger', icon: FileText },
   { id: 'settings', label: 'Settings', icon: Settings },
 ];
 

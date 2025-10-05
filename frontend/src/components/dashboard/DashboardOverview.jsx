@@ -15,7 +15,10 @@ import {
   CheckCircle,
   AlertTriangle,
   Wallet,
-  ExternalLink
+  ExternalLink,
+  User,
+  FileText,
+  Settings
 } from 'lucide-react';
 import { Card, StatCard } from '../ui/Card';
 import { Button } from '../ui/Button';
@@ -409,10 +412,28 @@ export const DashboardOverview = ({ onNavigate }) => {
                     variant="outline" 
                     className="w-full" 
                     size="lg" 
-                    icon={<Clock className="w-4 h-4" />}
+                    icon={<User className="w-4 h-4" />}
+                    onClick={() => onNavigate && onNavigate('profile')}
+                  >
+                    View Profile
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    className="w-full" 
+                    size="lg" 
+                    icon={<FileText className="w-4 h-4" />}
+                    onClick={() => onNavigate && onNavigate('ledger')}
+                  >
+                    Transaction Ledger
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    className="w-full" 
+                    size="lg" 
+                    icon={<Settings className="w-4 h-4" />}
                     onClick={() => onNavigate && onNavigate('settings')}
                   >
-                    Transaction History
+                    Settings
                   </Button>
                 </>
               ) : (
@@ -451,10 +472,30 @@ export const DashboardOverview = ({ onNavigate }) => {
                     variant="outline" 
                     className="w-full" 
                     size="lg" 
-                    icon={<Clock className="w-4 h-4" />}
-                    title="Connect wallet to view history"
+                    icon={<User className="w-4 h-4" />}
+                    title="Connect wallet to view profile"
                   >
-                    Transaction History
+                    View Profile
+                  </Button>
+                  <Button 
+                    disabled 
+                    variant="outline" 
+                    className="w-full" 
+                    size="lg" 
+                    icon={<FileText className="w-4 h-4" />}
+                    title="Connect wallet to view transaction ledger"
+                  >
+                    Transaction Ledger
+                  </Button>
+                  <Button 
+                    disabled 
+                    variant="outline" 
+                    className="w-full" 
+                    size="lg" 
+                    icon={<Settings className="w-4 h-4" />}
+                    title="Connect wallet to access settings"
+                  >
+                    Settings
                   </Button>
                   <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
                     <p className="text-xs text-blue-600 dark:text-blue-400 text-center">

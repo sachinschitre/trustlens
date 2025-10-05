@@ -8,11 +8,15 @@ import { Send, AlertTriangle, RefreshCw, DollarSign, Brain, FileText, ExternalLi
 import aiVerificationService from '../services/AIVerificationService';
 import AeternityContractService from '../services/AeternityContractService';
 import transactionManager from '../services/TransactionManager';
+import { useTransactions } from '../contexts/TransactionContext';
+import { useWallet } from '../contexts/WalletContext';
 import VerificationResult from './VerificationResult';
 import CONFIG from '../config/contract';
 import toast from 'react-hot-toast';
 
 const EnhancedContractActions = ({ wallet, onContractConnected }) => {
+  const { account } = useWallet();
+  const { addTransaction, updateTransaction } = useTransactions();
   const [contractService] = useState(() => new AeternityContractService());
   const [projectDetails, setProjectDetails] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -139,6 +143,18 @@ const EnhancedContractActions = ({ wallet, onContractConnected }) => {
           }
           transactionOptions = { amount: `${depositAmount} AE` };
           
+          // Create transaction in shared context
+          const depositTx = addTransaction({
+            type: 'deposit',
+            txHash: txHash,
+            amount: depositAmount,
+            from: account?.address || 'Your Wallet',
+            to: CONFIG.contractAddress,
+            status: 'pending'
+          });
+          
+          console.log('Created deposit transaction:', depositTx);
+          
           // Simulate deposit processing
           await new Promise(resolve => setTimeout(resolve, 1500));
           
@@ -150,10 +166,29 @@ const EnhancedContractActions = ({ wallet, onContractConnected }) => {
             amount: parseFloat(depositAmount),
             type: 'deposit'
           };
+
+          // Update transaction with confirmation details
+          updateTransaction(depositTx.id, {
+            status: 'confirmed',
+            blockNumber: Math.floor(Math.random() * 1000000) + 1000000,
+            gasUsed: result.gasUsed,
+            gasPrice: result.gasPrice
+          });
+          
           setDepositAmount('');
           break;
 
         case 'release':
+          // Create transaction in shared context
+          const releaseTx = addTransaction({
+            type: 'release',
+            txHash: txHash,
+            amount: '0', // Release doesn't involve amount from user
+            from: CONFIG.contractAddress,
+            to: account?.address || 'Freelancer Wallet',
+            status: 'pending'
+          });
+          
           // Simulate release processing
           await new Promise(resolve => setTimeout(resolve, 1200));
           
@@ -164,6 +199,14 @@ const EnhancedContractActions = ({ wallet, onContractConnected }) => {
             gasPrice: 1000000000,
             type: 'release'
           };
+
+          // Update transaction with confirmation details
+          updateTransaction(releaseTx.id, {
+            status: 'confirmed',
+            blockNumber: Math.floor(Math.random() * 1000000) + 1000000,
+            gasUsed: result.gasUsed,
+            gasPrice: result.gasPrice
+          });
           break;
 
         case 'dispute':
@@ -181,6 +224,16 @@ const EnhancedContractActions = ({ wallet, onContractConnected }) => {
             projectDetails.disputed = true;
           }
           
+          // Create transaction in shared context
+          const disputeTx = addTransaction({
+            type: 'dispute',
+            txHash: txHash,
+            amount: '0', // Dispute doesn't involve amount
+            from: account?.address || 'Your Wallet',
+            to: CONFIG.contractAddress,
+            status: 'pending'
+          });
+
           result = {
             txHash,
             status: 'success',
@@ -189,10 +242,29 @@ const EnhancedContractActions = ({ wallet, onContractConnected }) => {
             type: 'dispute',
             reason: disputeReason
           };
+
+          // Update transaction with confirmation details
+          updateTransaction(disputeTx.id, {
+            status: 'confirmed',
+            blockNumber: Math.floor(Math.random() * 1000000) + 1000000,
+            gasUsed: result.gasUsed,
+            gasPrice: result.gasPrice
+          });
+          
           setDisputeReason('');
           break;
 
         case 'refund':
+          // Create transaction in shared context
+          const refundTx = addTransaction({
+            type: 'refund',
+            txHash: txHash,
+            amount: '0', // Refund amount determined by contract
+            from: CONFIG.contractAddress,
+            to: account?.address || 'Your Wallet',
+            status: 'pending'
+          });
+          
           // Simulate refund processing
           await new Promise(resolve => setTimeout(resolve, 1100));
           
@@ -208,6 +280,14 @@ const EnhancedContractActions = ({ wallet, onContractConnected }) => {
             gasPrice: 1000000000,
             type: 'refund'
           };
+
+          // Update transaction with confirmation details
+          updateTransaction(refundTx.id, {
+            status: 'confirmed',
+            blockNumber: Math.floor(Math.random() * 1000000) + 1000000,
+            gasUsed: result.gasUsed,
+            gasPrice: result.gasPrice
+          });
           break;
 
         default:

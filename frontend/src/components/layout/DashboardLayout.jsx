@@ -36,8 +36,10 @@ export const DashboardLayout = ({ children, currentView, onNavigate }) => {
   };
 
   const handleWalletConnect = () => {
-    // Handle wallet connection
-    console.log('Connect wallet');
+    // Navigate to escrow page where wallet connection is handled
+    if (onNavigate) {
+      onNavigate('escrow');
+    }
   };
 
   const handleProfileClick = () => {

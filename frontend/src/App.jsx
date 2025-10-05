@@ -7,11 +7,15 @@ import React, { useState } from 'react';
 import { Toaster } from 'react-hot-toast';
 import { WalletProvider } from './contexts/WalletContext';
 import { SolanaWalletProvider } from './contexts/SolanaWalletContext';
+import { TransactionProvider } from './contexts/TransactionContext';
 import { ThemeProvider } from './theme/ThemeProvider';
 import DashboardLayout from './components/layout/DashboardLayout';
 import DashboardOverview from './components/dashboard/DashboardOverview';
 import EscrowDashboard from './components/escrow/EscrowDashboard';
 import AIVerifierDashboard from './components/ai/AIVerifierDashboard';
+import ProfileDashboard from './components/profile/ProfileDashboard';
+import SettingsDashboard from './components/settings/SettingsDashboard';
+import TransactionLedger from './components/ledger/TransactionLedger';
 import Footer from './components/layout/Footer';
 import WalletConnection from './components/WalletConnection';
 import ContractForm from './components/ContractForm';
@@ -245,20 +249,17 @@ function App() {
       case 'nfts':
         return <SolanaNftViewer />;
 
+      case 'profile':
+        return <ProfileDashboard />;
+
+      case 'ledger':
+        return <TransactionLedger />;
+
       case 'settings':
-        return (
-          <div className="text-center">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-              Settings
-            </h1>
-            <p className="text-gray-600 dark:text-gray-300">
-              Application settings coming soon...
-            </p>
-          </div>
-        );
+        return <SettingsDashboard />;
 
       default:
-        return <DashboardOverview />;
+        return <DashboardOverview onNavigate={setCurrentView} />;
     }
   };
 
@@ -266,24 +267,26 @@ function App() {
     <ThemeProvider>
       <WalletProvider>
         <SolanaWalletProvider>
-          <DashboardLayout 
-            currentView={currentView}
-            onNavigate={setCurrentView}
-          >
-            {renderContent()}
-            <Footer />
-          </DashboardLayout>
-          <Toaster
-            position="top-right"
-            toastOptions={{
-              duration: 4000,
-              style: {
-                background: 'var(--toast-bg)',
-                color: 'var(--toast-color)',
-                border: '1px solid var(--toast-border)',
-              },
-            }}
-          />
+          <TransactionProvider>
+            <DashboardLayout 
+              currentView={currentView}
+              onNavigate={setCurrentView}
+            >
+              {renderContent()}
+              <Footer />
+            </DashboardLayout>
+            <Toaster
+              position="top-right"
+              toastOptions={{
+                duration: 4000,
+                style: {
+                  background: 'var(--toast-bg)',
+                  color: 'var(--toast-color)',
+                  border: '1px solid var(--toast-border)',
+                },
+              }}
+            />
+          </TransactionProvider>
         </SolanaWalletProvider>
       </WalletProvider>
     </ThemeProvider>

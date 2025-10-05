@@ -7,6 +7,18 @@
     <title>TrustLens - Escrow Contract Interface</title>
     <meta name="description" content="Secure escrow platform powered by Superhero Wallet and Aeternity blockchain" />
     <meta name="theme-color" content="#2563eb" />
+    <meta http-equiv="Content-Security-Policy" content="
+      default-src 'self';
+      script-src 'self' 'unsafe-eval' 'unsafe-inline' https://superhero.com https://wallet.superhero.com;
+      style-src 'self' 'unsafe-inline';
+      img-src 'self' data: https:;
+      font-src 'self' data:;
+      connect-src 'self' https://testnet.aeternity.io https://mainnet.aeternity.io https://compiler.aepps.com https://sdk-testnet.aepps.com https://sdk-mainnet.aepps.com https://aescan.io https://api.openai.com http://localhost:3001;
+      frame-src 'self' https://superhero.com https://wallet.superhero.com;
+      object-src 'none';
+      base-uri 'self';
+      form-action 'self';
+    " />
   </head>
   <body>
     <div id="root"></div>

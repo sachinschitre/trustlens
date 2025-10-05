@@ -10,7 +10,7 @@ export const NETWORK_CONFIG = {
     nodeUrl: 'https://testnet.aeternity.io',
     compilerUrl: 'https://compiler.aepps.com',
     internalUrl: 'https://sdk-testnet.aepps.com',
-    explorerUrl: 'https://testnet.explorer.aepps.com',
+    explorerUrl: 'https://aescan.io',
     chainId: 'ae_uat'
   },
   mainnet: {
@@ -18,7 +18,7 @@ export const NETWORK_CONFIG = {
     nodeUrl: 'https://mainnet.aeternity.io',
     compilerUrl: 'https://compiler.aepps.com',
     internalUrl: 'https://sdk-mainnet.aepps.com',
-    explorerUrl: 'https://explorer.aepps.com',
+    explorerUrl: 'https://aescan.io',
     chainId: 'ae_mainnet'
   }
 };
