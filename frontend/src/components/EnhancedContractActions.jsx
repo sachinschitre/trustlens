@@ -66,6 +66,13 @@ const EnhancedContractActions = ({ wallet, onContractConnected }) => {
     };
   }, []);
 
+  // Load transaction history on mount
+  useEffect(() => {
+    if (isConnected) {
+      loadTransactionHistory();
+    }
+  }, [isConnected]);
+
   const connectToContract = async () => {
     try {
       setIsLoading(true);
@@ -97,8 +104,9 @@ const EnhancedContractActions = ({ wallet, onContractConnected }) => {
 
   const loadTransactionHistory = async () => {
     try {
-      const history = contractService.getTransactionHistory();
-      setTransactionHistory(history);
+      // Get transaction history from transaction manager
+      const confirmedHistory = transactionManager.getConfirmedTransactions();
+      setTransactionHistory(confirmedHistory);
     } catch (error) {
       console.error('Error loading transaction history:', error);
     }

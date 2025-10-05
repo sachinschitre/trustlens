@@ -174,8 +174,8 @@ function App() {
                 <div className="lg:col-span-1 space-y-6">
                   <WalletConnection onWalletConnected={() => setStep(2)} />
 
-                  {/* Contract Selection */}
-                  {step >= 2 && (
+                  {/* Contract Selection - Only show in enhanced mode */}
+                  {step >= 2 && useEnhancedActions && (
                     <ContractForm onContractConnected={handleContractConnected} />
                   )}
                 </div>
@@ -189,12 +189,15 @@ function App() {
                       onContractConnected={handleContractConnected}
                     />
                   ) : (
-                    contractService && (
-                      <ContractActions 
-                        contractService={contractService} 
-                        onTransactionComplete={handleTransactionComplete}
-                      />
-                    )
+                    <ContractForm onContractConnected={handleContractConnected} />
+                  )}
+
+                  {/* Basic Mode Contract Actions */}
+                  {!useEnhancedActions && contractService && (
+                    <ContractActions 
+                      contractService={contractService} 
+                      onTransactionComplete={handleTransactionComplete}
+                    />
                   )}
 
                   {/* Toggle Button */}
@@ -230,7 +233,7 @@ function App() {
                   )}
 
                   {/* Welcome Message */}
-                  {(!contractService || useEnhancedActions) && step < 2 && (
+                  {step < 2 && (
                     <div className="bg-white rounded-lg shadow-md p-8 border border-gray-200 text-center">
                       <div className="bg-blue-100 p-4 rounded-full w-fit mx-auto mb-6">
                         <span className="text-2xl">🚀</span>
