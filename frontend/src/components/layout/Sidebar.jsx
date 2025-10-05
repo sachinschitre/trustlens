@@ -14,20 +14,59 @@ import {
   User,
   FileText,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Users,
+  Briefcase,
+  Search,
+  MessageCircle,
+  Target
 } from 'lucide-react';
 import TrustLensLogo from '../../assets/logo/TrustLensLogo';
 import { useTheme } from '../../theme/ThemeProvider';
+import { useAuth } from '../../contexts/AuthContext';
 
-const navigationItems = [
+// Base navigation items that are common to all users
+const baseNavigationItems = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { id: 'escrow', label: 'Escrow', icon: Shield },
   { id: 'ai', label: 'AI Verifier', icon: Brain },
   { id: 'nfts', label: 'NFT Receipts', icon: ImageIcon },
-  { id: 'profile', label: 'Profile', icon: User },
   { id: 'ledger', label: 'Transaction Ledger', icon: FileText },
+];
+
+// Client-specific navigation items
+const clientNavigationItems = [
+  { id: 'find-freelancers', label: 'Find Freelancers', icon: Search },
+  { id: 'my-projects', label: 'My Projects', icon: Briefcase },
+  { id: 'messages', label: 'Messages', icon: MessageCircle },
+];
+
+// Freelancer-specific navigation items
+const freelancerNavigationItems = [
+  { id: 'find-jobs', label: 'Find Jobs', icon: Search },
+  { id: 'my-work', label: 'My Work', icon: Briefcase },
+  { id: 'messages', label: 'Messages', icon: MessageCircle },
+  { id: 'goals', label: 'Goals & Analytics', icon: Target },
+];
+
+// Common bottom navigation items
+const bottomNavigationItems = [
+  { id: 'profile', label: 'Profile', icon: User },
   { id: 'settings', label: 'Settings', icon: Settings },
 ];
+
+// Function to get navigation items based on user role
+const getNavigationItems = (isClient, isFreelancer) => {
+  let roleSpecificItems = [];
+  
+  if (isClient) {
+    roleSpecificItems = clientNavigationItems;
+  } else if (isFreelancer) {
+    roleSpecificItems = freelancerNavigationItems;
+  }
+  
+  return [...baseNavigationItems, ...roleSpecificItems, ...bottomNavigationItems];
+};
 
 export const Sidebar = ({ 
   isCollapsed = false, 
@@ -35,6 +74,11 @@ export const Sidebar = ({
   activeItem = 'dashboard',
   onNavigate 
 }) => {
+  const { isClient, isFreelancer } = useAuth();
+  
+  // Get navigation items based on user role
+  const navigationItems = getNavigationItems(isClient(), isFreelancer());
+  
   // Safely get theme with fallback
   let theme = 'light';
   try {

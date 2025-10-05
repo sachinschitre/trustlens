@@ -8,9 +8,12 @@ import { Toaster } from 'react-hot-toast';
 import { WalletProvider } from './contexts/WalletContext';
 import { SolanaWalletProvider } from './contexts/SolanaWalletContext';
 import { TransactionProvider } from './contexts/TransactionContext';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ThemeProvider } from './theme/ThemeProvider';
 import DashboardLayout from './components/layout/DashboardLayout';
 import DashboardOverview from './components/dashboard/DashboardOverview';
+import ClientDashboard from './components/dashboard/ClientDashboard';
+import FreelancerDashboard from './components/dashboard/FreelancerDashboard';
 import EscrowDashboard from './components/escrow/EscrowDashboard';
 import AIVerifierDashboard from './components/ai/AIVerifierDashboard';
 import ProfileDashboard from './components/profile/ProfileDashboard';
@@ -23,11 +26,14 @@ import ContractActions from './components/ContractActions';
 import EnhancedContractActions from './components/EnhancedContractActions';
 import TransactionStatus from './components/TransactionStatus';
 import SolanaNftViewer from './components/SolanaNftViewer';
+import Login from './components/auth/Login';
 import { FileText, BarChart3, Settings, Shield, Brain, ImageIcon } from 'lucide-react';
 import CONFIG from './config/contract';
 import './App.css';
 
-function App() {
+// Main authenticated app content
+function AuthenticatedApp() {
+  const { user, isClient, isFreelancer } = useAuth();
   const [contractService, setContractService] = useState(null);
   const [recentTransaction, setRecentTransaction] = useState(null);
   const [step, setStep] = useState(1); // 1: Connect Wallet, 2: Choose Contract, 3: Interact
@@ -77,7 +83,14 @@ function App() {
   const renderContent = () => {
     switch (currentView) {
       case 'dashboard':
-        return <DashboardOverview onNavigate={setCurrentView} />;
+        // Show role-specific dashboard
+        if (isClient()) {
+          return <ClientDashboard user={user} />;
+        } else if (isFreelancer()) {
+          return <FreelancerDashboard user={user} />;
+        } else {
+          return <DashboardOverview onNavigate={setCurrentView} />;
+        }
       
       case 'escrow':
         return <EscrowDashboard />;
@@ -264,17 +277,52 @@ function App() {
   };
 
   return (
+    <DashboardLayout 
+      currentView={currentView}
+      onNavigate={setCurrentView}
+    >
+      {renderContent()}
+      <Footer />
+    </DashboardLayout>
+  );
+}
+
+// Main App component with authentication
+function App() {
+  const { isAuthenticated, isLoading } = useAuth();
+
+  // Show loading spinner while checking authentication
+  if (isLoading) {
+    return (
+      <ThemeProvider>
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
+          <div className="text-center">
+            <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center animate-pulse">
+              <span className="text-2xl font-bold text-white">TL</span>
+            </div>
+            <p className="text-gray-600 dark:text-gray-300">Loading TrustLens...</p>
+          </div>
+        </div>
+      </ThemeProvider>
+    );
+  }
+
+  // Show login screen if not authenticated
+  if (!isAuthenticated) {
+    return (
+      <ThemeProvider>
+        <Login />
+      </ThemeProvider>
+    );
+  }
+
+  // Show authenticated app
+  return (
     <ThemeProvider>
       <WalletProvider>
         <SolanaWalletProvider>
           <TransactionProvider>
-            <DashboardLayout 
-              currentView={currentView}
-              onNavigate={setCurrentView}
-            >
-              {renderContent()}
-              <Footer />
-            </DashboardLayout>
+            <AuthenticatedApp />
             <Toaster
               position="top-right"
               toastOptions={{
