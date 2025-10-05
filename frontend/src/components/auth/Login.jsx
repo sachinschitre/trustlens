@@ -7,7 +7,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../theme/ThemeProvider';
-import { Eye, EyeOff, User, Mail, Lock, Briefcase, UserCheck } from 'lucide-react';
+import { Eye, EyeOff, User, Mail, Lock, Briefcase, UserCheck, Scale } from 'lucide-react';
 import Button from '../ui/Button';
 import { Input } from '../ui/Input';
 import Card from '../ui/Card';
@@ -82,6 +82,13 @@ const Login = ({ onLoginSuccess }) => {
       description: 'Find work and deliver projects',
       icon: Briefcase,
       color: 'green'
+    },
+    {
+      value: 'mediator',
+      label: 'Mediator',
+      description: 'Resolve disputes and ensure fair outcomes',
+      icon: Scale,
+      color: 'purple'
     }
   ];
 
@@ -249,7 +256,7 @@ const Login = ({ onLoginSuccess }) => {
             <div className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
               <p><strong>Email:</strong> demo@trustlens.com</p>
               <p><strong>Password:</strong> demo123</p>
-              <p><strong>Role:</strong> Choose Client or Freelancer</p>
+              <p><strong>Roles:</strong> Client, Freelancer, or Mediator</p>
             </div>
           </div>
         </Card>

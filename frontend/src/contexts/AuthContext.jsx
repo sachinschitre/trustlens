@@ -65,7 +65,7 @@ export const AuthProvider = ({ children }) => {
           id: `user_${Date.now()}`,
           email,
           role,
-          name: role === 'client' ? 'Client User' : 'Freelancer User',
+          name: role === 'client' ? 'Client User' : role === 'freelancer' ? 'Freelancer User' : 'Mediator User',
           avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`,
           createdAt: new Date().toISOString(),
         };
@@ -103,6 +103,7 @@ export const AuthProvider = ({ children }) => {
 
   const isClient = () => user?.role === 'client';
   const isFreelancer = () => user?.role === 'freelancer';
+  const isMediator = () => user?.role === 'mediator';
 
   const value = {
     user,
@@ -113,6 +114,7 @@ export const AuthProvider = ({ children }) => {
     updateUser,
     isClient,
     isFreelancer,
+    isMediator,
   };
 
   return (

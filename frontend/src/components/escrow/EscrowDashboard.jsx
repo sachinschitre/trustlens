@@ -18,7 +18,7 @@ import EnhancedContractActions from '../EnhancedContractActions';
 import CONFIG from '../../config/contract';
 import toast from 'react-hot-toast';
 
-export const EscrowDashboard = () => {
+export const EscrowDashboard = ({ readOnly = false }) => {
   const { isConnected } = useWallet();
   const { addTransaction, updateTransaction, getRecentTransactions, recentTransaction } = useTransactions();
   const [contractService, setContractService] = useState(null);
@@ -125,11 +125,20 @@ export const EscrowDashboard = () => {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-              Escrow Dashboard
+              {readOnly ? 'My Escrow Contracts' : 'Escrow Dashboard'}
             </h1>
             <p className="mt-2 text-gray-600 dark:text-gray-400">
-              Manage your smart contract escrows with AI-powered verification
+              {readOnly 
+                ? 'View your escrow contracts and track their status' 
+                : 'Manage your smart contract escrows with AI-powered verification'
+              }
             </p>
+            {readOnly && (
+              <div className="mt-2 inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400">
+                <Eye className="w-4 h-4 mr-1" />
+                Read-only mode
+              </div>
+            )}
           </div>
           <div className={`p-4 rounded-2xl border-2 ${getStepColor()}`}>
             {getStepIcon()}
@@ -209,30 +218,52 @@ export const EscrowDashboard = () => {
                 <div className="flex items-center space-x-3 mb-6">
                   <FileText className="w-6 h-6 text-green-600" />
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                    Choose or Deploy Contract
+                    {readOnly ? 'Contract Information' : 'Choose or Deploy Contract'}
                   </h3>
                 </div>
                 
-                <div className="space-y-4">
-                  <div className="flex space-x-4">
-                    <Button
-                      onClick={() => setUseEnhancedActions(true)}
-                      variant={useEnhancedActions ? 'default' : 'outline'}
-                      className="flex-1"
-                    >
-                      Enhanced Mode
-                    </Button>
-                    <Button
-                      onClick={() => setUseEnhancedActions(false)}
-                      variant={!useEnhancedActions ? 'default' : 'outline'}
-                      className="flex-1"
-                    >
-                      Basic Mode
-                    </Button>
+                {readOnly ? (
+                  <div className="text-center py-8">
+                    <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                    <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                      View Contract Details
+                    </h4>
+                    <p className="text-gray-600 dark:text-gray-400 mb-4">
+                      View information about your escrow contracts.
+                    </p>
+                    <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 text-left">
+                      <h5 className="font-medium text-gray-900 dark:text-white mb-2">Default Contract:</h5>
+                      <p className="font-mono text-sm text-gray-600 dark:text-gray-400 break-all">
+                        {CONFIG.contract.address}
+                      </p>
+                      <h5 className="font-medium text-gray-900 dark:text-white mb-2 mt-4">Network:</h5>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        {CONFIG.contract.network}
+                      </p>
+                    </div>
                   </div>
-                  
-                  <ContractForm onContractConnected={handleContractConnected} />
-                </div>
+                ) : (
+                  <div className="space-y-4">
+                    <div className="flex space-x-4">
+                      <Button
+                        onClick={() => setUseEnhancedActions(true)}
+                        variant={useEnhancedActions ? 'default' : 'outline'}
+                        className="flex-1"
+                      >
+                        Enhanced Mode
+                      </Button>
+                      <Button
+                        onClick={() => setUseEnhancedActions(false)}
+                        variant={!useEnhancedActions ? 'default' : 'outline'}
+                        className="flex-1"
+                      >
+                        Basic Mode
+                      </Button>
+                    </div>
+                    
+                    <ContractForm onContractConnected={handleContractConnected} />
+                  </div>
+                )}
               </Card>
             </motion.div>
           )}
@@ -248,14 +279,38 @@ export const EscrowDashboard = () => {
                 <div className="flex items-center space-x-3 mb-6">
                   <Shield className="w-6 h-6 text-purple-600" />
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                    Contract Actions
+                    {readOnly ? 'Contract View' : 'Contract Actions'}
                   </h3>
                 </div>
                 
-                {useEnhancedActions ? (
-                  <EnhancedContractActions />
+                {readOnly ? (
+                  <div className="text-center py-8">
+                    <Eye className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                    <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                      View-Only Mode
+                    </h4>
+                    <p className="text-gray-600 dark:text-gray-400 mb-4">
+                      You can view contract information but cannot perform actions.
+                    </p>
+                    <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 text-left">
+                      <h5 className="font-medium text-gray-900 dark:text-white mb-2">Contract Address:</h5>
+                      <p className="font-mono text-sm text-gray-600 dark:text-gray-400 break-all">
+                        {CONFIG.contract.address}
+                      </p>
+                      <h5 className="font-medium text-gray-900 dark:text-white mb-2 mt-4">Network:</h5>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        {CONFIG.contract.network}
+                      </p>
+                    </div>
+                  </div>
                 ) : (
-                  <ContractActions contractService={contractService} />
+                  <>
+                    {useEnhancedActions ? (
+                      <EnhancedContractActions />
+                    ) : (
+                      <ContractActions contractService={contractService} />
+                    )}
+                  </>
                 )}
               </Card>
             </motion.div>

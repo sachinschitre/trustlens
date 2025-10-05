@@ -14,6 +14,7 @@ import DashboardLayout from './components/layout/DashboardLayout';
 import DashboardOverview from './components/dashboard/DashboardOverview';
 import ClientDashboard from './components/dashboard/ClientDashboard';
 import FreelancerDashboard from './components/dashboard/FreelancerDashboard';
+import MediatorDashboard from './components/dashboard/MediatorDashboard';
 import EscrowDashboard from './components/escrow/EscrowDashboard';
 import AIVerifierDashboard from './components/ai/AIVerifierDashboard';
 import ProfileDashboard from './components/profile/ProfileDashboard';
@@ -27,13 +28,13 @@ import EnhancedContractActions from './components/EnhancedContractActions';
 import TransactionStatus from './components/TransactionStatus';
 import SolanaNftViewer from './components/SolanaNftViewer';
 import Login from './components/auth/Login';
-import { FileText, BarChart3, Settings, Shield, Brain, ImageIcon } from 'lucide-react';
+import { FileText, BarChart3, Settings, Shield, Brain, ImageIcon, AlertTriangle, Scale, Gavel, Target } from 'lucide-react';
 import CONFIG from './config/contract';
 import './App.css';
 
 // Main authenticated app content
 function AuthenticatedApp() {
-  const { user, isClient, isFreelancer } = useAuth();
+  const { user, isClient, isFreelancer, isMediator } = useAuth();
   const [contractService, setContractService] = useState(null);
   const [recentTransaction, setRecentTransaction] = useState(null);
   const [step, setStep] = useState(1); // 1: Connect Wallet, 2: Choose Contract, 3: Interact
@@ -88,12 +89,51 @@ function AuthenticatedApp() {
           return <ClientDashboard user={user} />;
         } else if (isFreelancer()) {
           return <FreelancerDashboard user={user} />;
+        } else if (isMediator()) {
+          return <MediatorDashboard user={user} />;
         } else {
           return <DashboardOverview onNavigate={setCurrentView} />;
         }
       
       case 'escrow':
-        return <EscrowDashboard />;
+        // Only clients can access full escrow management
+        if (isClient()) {
+          return <EscrowDashboard />;
+        } else {
+          return (
+            <div className="flex items-center justify-center h-64">
+              <div className="text-center">
+                <Shield className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                  Access Restricted
+                </h2>
+                <p className="text-gray-600 dark:text-gray-300">
+                  Only clients can access escrow management. Use "My Escrow" to view your contracts.
+                </p>
+              </div>
+            </div>
+          );
+        }
+
+      case 'my-escrow':
+        // Freelancers can view their escrow contracts (read-only)
+        if (isFreelancer()) {
+          return <EscrowDashboard readOnly={true} />;
+        } else {
+          return (
+            <div className="flex items-center justify-center h-64">
+              <div className="text-center">
+                <Shield className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                  Access Restricted
+                </h2>
+                <p className="text-gray-600 dark:text-gray-300">
+                  Only freelancers can access "My Escrow". Use "Escrow Management" to manage contracts.
+                </p>
+              </div>
+            </div>
+          );
+        }
       
       case 'escrow-old':
         return (
@@ -257,7 +297,24 @@ function AuthenticatedApp() {
         );
 
       case 'ai':
-        return <AIVerifierDashboard />;
+        // Only clients can access AI verification (they verify freelancer work)
+        if (isClient()) {
+          return <AIVerifierDashboard />;
+        } else {
+          return (
+            <div className="flex items-center justify-center h-64">
+              <div className="text-center">
+                <Brain className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                  Access Restricted
+                </h2>
+                <p className="text-gray-600 dark:text-gray-300">
+                  AI verification is only available to clients for verifying freelancer work completion.
+                </p>
+              </div>
+            </div>
+          );
+        }
 
       case 'nfts':
         return <SolanaNftViewer />;
@@ -270,6 +327,131 @@ function AuthenticatedApp() {
 
       case 'settings':
         return <SettingsDashboard />;
+
+      // Mediator-specific routes
+      case 'disputes':
+        if (isMediator()) {
+          return (
+            <div className="flex items-center justify-center h-64">
+              <div className="text-center">
+                <AlertTriangle className="w-16 h-16 text-red-400 mx-auto mb-4" />
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                  Active Disputes
+                </h2>
+                <p className="text-gray-600 dark:text-gray-300">
+                  Detailed dispute management interface coming soon.
+                </p>
+              </div>
+            </div>
+          );
+        } else {
+          return (
+            <div className="flex items-center justify-center h-64">
+              <div className="text-center">
+                <AlertTriangle className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                  Access Restricted
+                </h2>
+                <p className="text-gray-600 dark:text-gray-300">
+                  Only mediators can access dispute management.
+                </p>
+              </div>
+            </div>
+          );
+        }
+
+      case 'mediation-room':
+        if (isMediator()) {
+          return (
+            <div className="flex items-center justify-center h-64">
+              <div className="text-center">
+                <Scale className="w-16 h-16 text-purple-400 mx-auto mb-4" />
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                  Mediation Room
+                </h2>
+                <p className="text-gray-600 dark:text-gray-300">
+                  Live mediation sessions interface coming soon.
+                </p>
+              </div>
+            </div>
+          );
+        } else {
+          return (
+            <div className="flex items-center justify-center h-64">
+              <div className="text-center">
+                <Scale className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                  Access Restricted
+                </h2>
+                <p className="text-gray-600 dark:text-gray-300">
+                  Only mediators can access the mediation room.
+                </p>
+              </div>
+            </div>
+          );
+        }
+
+      case 'case-history':
+        if (isMediator()) {
+          return (
+            <div className="flex items-center justify-center h-64">
+              <div className="text-center">
+                <Gavel className="w-16 h-16 text-blue-400 mx-auto mb-4" />
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                  Case History
+                </h2>
+                <p className="text-gray-600 dark:text-gray-300">
+                  Historical case records and analytics coming soon.
+                </p>
+              </div>
+            </div>
+          );
+        } else {
+          return (
+            <div className="flex items-center justify-center h-64">
+              <div className="text-center">
+                <Gavel className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                  Access Restricted
+                </h2>
+                <p className="text-gray-600 dark:text-gray-300">
+                  Only mediators can access case history.
+                </p>
+              </div>
+            </div>
+          );
+        }
+
+      case 'analytics':
+        if (isMediator()) {
+          return (
+            <div className="flex items-center justify-center h-64">
+              <div className="text-center">
+                <Target className="w-16 h-16 text-green-400 mx-auto mb-4" />
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                  Mediation Analytics
+                </h2>
+                <p className="text-gray-600 dark:text-gray-300">
+                  Detailed analytics and reporting dashboard coming soon.
+                </p>
+              </div>
+            </div>
+          );
+        } else {
+          return (
+            <div className="flex items-center justify-center h-64">
+              <div className="text-center">
+                <Target className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                  Access Restricted
+                </h2>
+                <p className="text-gray-600 dark:text-gray-300">
+                  Only mediators can access analytics.
+                </p>
+              </div>
+            </div>
+          );
+        }
 
       default:
         return <DashboardOverview onNavigate={setCurrentView} />;

@@ -19,23 +19,26 @@ import {
   Briefcase,
   Search,
   MessageCircle,
-  Target
+  Target,
+  Scale,
+  AlertTriangle,
+  Gavel
 } from 'lucide-react';
 import TrustLensLogo from '../../assets/logo/TrustLensLogo';
 import { useTheme } from '../../theme/ThemeProvider';
 import { useAuth } from '../../contexts/AuthContext';
 
-// Base navigation items that are common to all users
-const baseNavigationItems = [
+// Common navigation items available to all users
+const commonNavigationItems = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { id: 'escrow', label: 'Escrow', icon: Shield },
-  { id: 'ai', label: 'AI Verifier', icon: Brain },
   { id: 'nfts', label: 'NFT Receipts', icon: ImageIcon },
   { id: 'ledger', label: 'Transaction Ledger', icon: FileText },
 ];
 
 // Client-specific navigation items
 const clientNavigationItems = [
+  { id: 'escrow', label: 'Escrow Management', icon: Shield },
+  { id: 'ai', label: 'AI Verifier', icon: Brain },
   { id: 'find-freelancers', label: 'Find Freelancers', icon: Search },
   { id: 'my-projects', label: 'My Projects', icon: Briefcase },
   { id: 'messages', label: 'Messages', icon: MessageCircle },
@@ -43,10 +46,20 @@ const clientNavigationItems = [
 
 // Freelancer-specific navigation items
 const freelancerNavigationItems = [
+  { id: 'my-escrow', label: 'My Escrow', icon: Shield },
   { id: 'find-jobs', label: 'Find Jobs', icon: Search },
   { id: 'my-work', label: 'My Work', icon: Briefcase },
   { id: 'messages', label: 'Messages', icon: MessageCircle },
   { id: 'goals', label: 'Goals & Analytics', icon: Target },
+];
+
+// Mediator-specific navigation items
+const mediatorNavigationItems = [
+  { id: 'disputes', label: 'Active Disputes', icon: AlertTriangle },
+  { id: 'mediation-room', label: 'Mediation Room', icon: Scale },
+  { id: 'case-history', label: 'Case History', icon: Gavel },
+  { id: 'analytics', label: 'Analytics', icon: Target },
+  { id: 'messages', label: 'Messages', icon: MessageCircle },
 ];
 
 // Common bottom navigation items
@@ -56,16 +69,18 @@ const bottomNavigationItems = [
 ];
 
 // Function to get navigation items based on user role
-const getNavigationItems = (isClient, isFreelancer) => {
+const getNavigationItems = (isClient, isFreelancer, isMediator) => {
   let roleSpecificItems = [];
   
   if (isClient) {
     roleSpecificItems = clientNavigationItems;
   } else if (isFreelancer) {
     roleSpecificItems = freelancerNavigationItems;
+  } else if (isMediator) {
+    roleSpecificItems = mediatorNavigationItems;
   }
   
-  return [...baseNavigationItems, ...roleSpecificItems, ...bottomNavigationItems];
+  return [...commonNavigationItems, ...roleSpecificItems, ...bottomNavigationItems];
 };
 
 export const Sidebar = ({ 
@@ -74,10 +89,10 @@ export const Sidebar = ({
   activeItem = 'dashboard',
   onNavigate 
 }) => {
-  const { isClient, isFreelancer } = useAuth();
+  const { isClient, isFreelancer, isMediator } = useAuth();
   
   // Get navigation items based on user role
-  const navigationItems = getNavigationItems(isClient(), isFreelancer());
+  const navigationItems = getNavigationItems(isClient(), isFreelancer(), isMediator());
   
   // Safely get theme with fallback
   let theme = 'light';

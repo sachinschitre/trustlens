@@ -17,7 +17,7 @@ export const TopNavbar = ({
   onProfileClick 
 }) => {
   const { account, isConnected, balance } = useWallet();
-  const { user, logout, isClient, isFreelancer } = useAuth();
+  const { user, logout, isClient, isFreelancer, isMediator } = useAuth();
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const dropdownRef = useRef(null);
   
@@ -195,9 +195,13 @@ export const TopNavbar = ({
                         <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
                           isClient() 
                             ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400'
-                            : 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
+                            : isFreelancer()
+                            ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
+                            : isMediator()
+                            ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400'
+                            : 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400'
                         }`}>
-                          {isClient() ? 'Client' : isFreelancer() ? 'Freelancer' : 'User'}
+                          {isClient() ? 'Client' : isFreelancer() ? 'Freelancer' : isMediator() ? 'Mediator' : 'User'}
                         </span>
                       </div>
                     </div>
