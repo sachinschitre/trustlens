@@ -97,28 +97,28 @@ class AIVerificationService {
     const deliveryLength = deliverySummary.length;
     const lengthRatio = deliveryLength / Math.max(taskLength, 1);
     
-    // Base score from similarity
-    let baseScore = similarity * 100;
+    // More generous base score calculation
+    let baseScore = similarity * 80 + 20; // Start at 20, scale similarity to 80 points max
     
     // Adjust based on delivery length (more detailed delivery = higher score)
-    if (lengthRatio > 1.5) baseScore += 10; // Detailed delivery
-    if (lengthRatio < 0.5) baseScore -= 15; // Too brief
+    if (lengthRatio > 1.5) baseScore += 15; // Detailed delivery
+    if (lengthRatio < 0.5) baseScore -= 10; // Too brief
     
-    // Add some realistic variance
-    const variance = (Math.random() - 0.5) * 20; // ±10 points
+    // Add some realistic variance with positive bias
+    const variance = (Math.random() - 0.3) * 25; // -7.5 to +17.5 points (positive bias)
     completionScore = Math.max(0, Math.min(100, Math.round(baseScore + variance)));
     
-    // More balanced recommendation logic
-    if (completionScore >= 75) {
+    // More generous recommendation logic
+    if (completionScore >= 70) {
       recommendation = 'release';
-    } else if (completionScore >= 60) {
-      // 60-74: More likely to release with some variance
-      recommendation = Math.random() > 0.3 ? 'release' : 'dispute';
-    } else if (completionScore >= 40) {
-      // 40-59: Mixed recommendations
-      recommendation = Math.random() > 0.6 ? 'release' : 'dispute';
+    } else if (completionScore >= 55) {
+      // 55-69: More likely to release with some variance
+      recommendation = Math.random() > 0.4 ? 'release' : 'dispute';
+    } else if (completionScore >= 35) {
+      // 35-54: Mixed recommendations with slight release bias
+      recommendation = Math.random() > 0.65 ? 'release' : 'dispute';
     } else {
-      // Below 40: Dispute
+      // Below 35: Dispute
       recommendation = 'dispute';
     }
     
