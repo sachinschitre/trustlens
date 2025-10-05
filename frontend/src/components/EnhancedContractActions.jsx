@@ -81,9 +81,9 @@ const EnhancedContractActions = ({ wallet, onContractConnected }) => {
       await loadProjectDetails();
       await loadTransactionHistory();
       
-      // Notify parent component that contract is connected
+      // Notify parent component that enhanced mode is ready
       if (onContractConnected) {
-        onContractConnected(contractService);
+        onContractConnected();
       }
     } catch (error) {
       console.error('Error connecting to contract:', error);

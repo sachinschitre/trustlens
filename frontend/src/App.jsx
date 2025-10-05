@@ -21,7 +21,11 @@ function App() {
   const [useEnhancedActions, setUseEnhancedActions] = useState(true); // Toggle between enhanced and basic actions
 
   const handleContractConnected = (service, deployResult = null) => {
-    setContractService(service);
+    // Only set contractService for basic mode
+    if (!useEnhancedActions) {
+      setContractService(service);
+    }
+    
     if (deployResult) {
       setRecentTransaction({
         txHash: deployResult.txHash,
@@ -40,6 +44,11 @@ function App() {
     setContractService(null);
     setRecentTransaction(null);
     setStep(2);
+  };
+
+  const handleEnhancedModeReady = () => {
+    // Enhanced mode is ready, advance to step 3
+    setStep(3);
   };
 
   return (
@@ -186,7 +195,7 @@ function App() {
                   {useEnhancedActions ? (
                     <EnhancedContractActions 
                       wallet={contractService?.wallet}
-                      onContractConnected={handleContractConnected}
+                      onContractConnected={handleEnhancedModeReady}
                     />
                   ) : (
                     <ContractForm onContractConnected={handleContractConnected} />
