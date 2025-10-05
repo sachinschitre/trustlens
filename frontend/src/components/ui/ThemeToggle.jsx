@@ -9,7 +9,19 @@ import { Sun, Moon } from 'lucide-react';
 import { useTheme } from '../../theme/ThemeProvider';
 
 export const ThemeToggle = ({ className = '' }) => {
-  const { theme, toggleTheme, isDark } = useTheme();
+  // Safely get theme with fallback
+  let theme = 'light';
+  let toggleTheme = () => {};
+  let isDark = false;
+  
+  try {
+    const themeContext = useTheme();
+    theme = themeContext?.theme || 'light';
+    toggleTheme = themeContext?.toggleTheme || (() => {});
+    isDark = themeContext?.isDark || false;
+  } catch (error) {
+    console.warn('ThemeProvider not available, using light theme as fallback');
+  }
 
   return (
     <motion.button
