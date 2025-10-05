@@ -13,12 +13,52 @@ import {
   Activity,
   Clock,
   CheckCircle,
-  AlertTriangle
+  AlertTriangle,
+  Wallet,
+  ExternalLink
 } from 'lucide-react';
 import { Card, StatCard } from '../ui/Card';
 import { Button } from '../ui/Button';
+import { useWallet } from '../../contexts/WalletContext';
+import toast from 'react-hot-toast';
 
 export const DashboardOverview = () => {
+  const { 
+    account, 
+    balance,
+    isConnected, 
+    isAvailable,
+    loading, 
+    connectWallet, 
+    disconnectWallet, 
+    fetchBalance,
+    formatAddress,
+    getNetworkInfo
+  } = useWallet();
+
+  const [copied, setCopied] = React.useState(false);
+
+  React.useEffect(() => {
+    if (isConnected && account) {
+      fetchBalance();
+    }
+  }, [isConnected, account, fetchBalance]);
+
+  const handleCopyAddress = () => {
+    if (account?.address) {
+      navigator.clipboard.writeText(account.address);
+      setCopied(true);
+      toast.success('Address copied to clipboard!');
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  const handleInstallWallet = () => {
+    window.open('https://superhero.com/', '_blank');
+  };
+
+  const networkInfo = getNetworkInfo();
+
   const stats = [
     {
       title: 'Total Escrows',
@@ -129,6 +169,123 @@ export const DashboardOverview = () => {
         </p>
       </motion.div>
 
+      {/* Wallet Connection Section */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.05 }}
+      >
+        <Card>
+          {!isConnected ? (
+            <div className="text-center">
+              {!isAvailable ? (
+                <div className="space-y-4">
+                  <div className="bg-orange-100 dark:bg-orange-900/20 p-4 rounded-xl w-fit mx-auto">
+                    <AlertTriangle className="h-8 w-8 text-orange-600 dark:text-orange-400" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                      Superhero Wallet Not Found
+                    </h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-300 mb-6">
+                      Please install Superhero Wallet to connect to the Aeternity blockchain
+                    </p>
+                    <Button
+                      onClick={handleInstallWallet}
+                      className="mx-auto"
+                      icon={ExternalLink}
+                    >
+                      Install Superhero Wallet
+                    </Button>
+                  </div>
+                  <div className="mt-4 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      Superhero Wallet is the official wallet for the Aeternity blockchain.
+                      It allows you to securely manage your AE tokens and interact with dApps.
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div className="bg-blue-100 dark:bg-blue-900/20 p-4 rounded-xl w-fit mx-auto">
+                    <Wallet className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                      Connect Your Wallet
+                    </h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-300 mb-6">
+                      Connect your Superhero Wallet to start using TrustLens escrow platform
+                    </p>
+                    <Button
+                      onClick={connectWallet}
+                      disabled={loading}
+                      loading={loading}
+                      className="mx-auto"
+                      icon={Wallet}
+                    >
+                      {loading ? 'Connecting...' : 'Connect Superhero Wallet'}
+                    </Button>
+                  </div>
+                  {loading && (
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      Please approve the connection in your Superhero Wallet extension
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <div className="bg-green-100 dark:bg-green-900/20 p-3 rounded-xl">
+                  <Wallet className="h-6 w-6 text-green-600 dark:text-green-400" />
+                </div>
+                <div>
+                  <div className="flex items-center space-x-2 mb-1">
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">
+                      🟢 Wallet Connected
+                    </p>
+                    <span className="text-xs bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-400 px-2 py-0.5 rounded-full">
+                      {networkInfo.network}
+                    </span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <p className="text-xs text-gray-600 dark:text-gray-300 font-mono">
+                      {formatAddress(account?.address)}
+                    </p>
+                    <button
+                      onClick={handleCopyAddress}
+                      className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                      title="Copy address"
+                    >
+                      {copied ? (
+                        <CheckCircle className="h-3 w-3 text-green-500" />
+                      ) : (
+                        <ExternalLink className="h-3 w-3" />
+                      )}
+                    </button>
+                  </div>
+                  <div className="mt-1">
+                    <p className="text-sm text-green-600 dark:text-green-400 font-medium">
+                      Balance: {balance ? `${balance} AE` : 'Loading...'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={disconnectWallet}
+                className="text-red-600 dark:text-red-400 border-red-200 dark:border-red-800 hover:bg-red-50 dark:hover:bg-red-900/20"
+              >
+                Disconnect
+              </Button>
+            </div>
+          )}
+        </Card>
+      </motion.div>
+
       {/* Stats Grid */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -220,18 +377,69 @@ export const DashboardOverview = () => {
               Quick Actions
             </h2>
             <div className="space-y-4">
-              <Button className="w-full" size="lg">
-                Create New Escrow
-              </Button>
-              <Button variant="outline" className="w-full" size="lg">
-                AI Verification
-              </Button>
-              <Button variant="outline" className="w-full" size="lg">
-                View NFT Receipts
-              </Button>
-              <Button variant="outline" className="w-full" size="lg">
-                Transaction History
-              </Button>
+              {isConnected ? (
+                <>
+                  <Button className="w-full" size="lg" icon={Shield}>
+                    Create New Escrow
+                  </Button>
+                  <Button variant="outline" className="w-full" size="lg" icon={Activity}>
+                    AI Verification
+                  </Button>
+                  <Button variant="outline" className="w-full" size="lg" icon={ExternalLink}>
+                    View NFT Receipts
+                  </Button>
+                  <Button variant="outline" className="w-full" size="lg" icon={Clock}>
+                    Transaction History
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button 
+                    disabled 
+                    className="w-full" 
+                    size="lg" 
+                    icon={Shield}
+                    title="Connect wallet to create escrow"
+                  >
+                    Create New Escrow
+                  </Button>
+                  <Button 
+                    disabled 
+                    variant="outline" 
+                    className="w-full" 
+                    size="lg" 
+                    icon={Activity}
+                    title="Connect wallet for AI verification"
+                  >
+                    AI Verification
+                  </Button>
+                  <Button 
+                    disabled 
+                    variant="outline" 
+                    className="w-full" 
+                    size="lg" 
+                    icon={ExternalLink}
+                    title="Connect wallet to view NFTs"
+                  >
+                    View NFT Receipts
+                  </Button>
+                  <Button 
+                    disabled 
+                    variant="outline" 
+                    className="w-full" 
+                    size="lg" 
+                    icon={Clock}
+                    title="Connect wallet to view history"
+                  >
+                    Transaction History
+                  </Button>
+                  <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                    <p className="text-xs text-blue-600 dark:text-blue-400 text-center">
+                      💡 Connect your wallet to unlock all features
+                    </p>
+                  </div>
+                </>
+              )}
             </div>
           </Card>
         </motion.div>
