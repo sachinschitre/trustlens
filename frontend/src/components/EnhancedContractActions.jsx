@@ -270,12 +270,18 @@ const EnhancedContractActions = ({ wallet, onContractConnected }) => {
     }
   };
 
-  // Auto-enable release button based on AI recommendation
+  // Auto-enable release button based on AI recommendation or manual override
   const shouldEnableRelease = () => {
-    if (!verificationResult) return false;
-    return verificationResult.recommendation === 'release' && 
-           verificationResult.completionScore >= 70 &&
-           !projectDetails?.disputed;
+    // Always allow release if not disputed and we have project details
+    if (!projectDetails?.disputed && projectDetails) {
+      // If AI verification is available and recommends release, show as recommended
+      if (verificationResult && verificationResult.recommendation === 'release' && verificationResult.completionScore >= 70) {
+        return 'recommended';
+      }
+      // Otherwise allow manual release
+      return 'manual';
+    }
+    return false;
   };
 
   if (!isConnected && !isLoading) {
@@ -476,16 +482,33 @@ const EnhancedContractActions = ({ wallet, onContractConnected }) => {
               <p className="text-sm text-gray-600">
                 Release funds to freelancer (Client/Mediator only)
               </p>
+              {shouldEnableRelease() === 'manual' && (
+                <p className="text-xs text-blue-600">
+                  💡 Use AI verification above to get intelligent release recommendations
+                </p>
+              )}
+              {shouldEnableRelease() === 'recommended' && (
+                <p className="text-xs text-green-600">
+                  ✅ AI verification recommends releasing funds
+                </p>
+              )}
               <button
                 onClick={() => handleAction('release')}
                 disabled={isLoading || projectDetails?.disputed || !shouldEnableRelease()}
                 className={`w-full px-4 py-2 text-white rounded-lg focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors ${
-                  shouldEnableRelease() 
+                  shouldEnableRelease() === 'recommended'
                     ? 'bg-green-600 hover:bg-green-700 focus:ring-green-500' 
-                    : 'bg-blue-600 hover:bg-blue-700 focus:ring-blue-500'
+                    : shouldEnableRelease() === 'manual'
+                    ? 'bg-blue-600 hover:bg-blue-700 focus:ring-blue-500'
+                    : 'bg-gray-400 hover:bg-gray-500 focus:ring-gray-500'
                 }`}
               >
-                {shouldEnableRelease() ? '✅ Release to Freelancer (AI Recommended)' : 'Release to Freelancer'}
+                {shouldEnableRelease() === 'recommended' 
+                  ? '✅ Release to Freelancer (AI Recommended)' 
+                  : shouldEnableRelease() === 'manual'
+                  ? 'Release to Freelancer'
+                  : 'Release to Freelancer (Disabled)'
+                }
               </button>
             </div>
 
